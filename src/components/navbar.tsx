@@ -3,6 +3,12 @@
 import { useSession, signIn, signOut } from "next-auth/react";
 import Image from "next/image";
 import { useState } from "react";
+import {
+  LoginButton,
+  LogoutButton,
+  ProfileButton,
+  RegisterButton,
+} from "@/components/buttons.component";
 
 export default function Navbar() {
   const { data: session } = useSession();
@@ -96,15 +102,7 @@ export default function Navbar() {
             </div>
           </div>
           <div className=" inset-y-0 right-0 flex space-x-4 items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-            {!session && (
-              <button
-                className="text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium"
-                type="button"
-                onClick={() => signIn()}
-              >
-                Logg inn
-              </button>
-            )}
+            {!session && <LoginButton />}
             {session?.user && (
               <>
                 <div>
@@ -122,37 +120,33 @@ export default function Navbar() {
                       onClick={clickModal}
                     >
                       <span className="sr-only">Open user menu</span>
-                      {session.user.image && (
-                        <Image
-                          src={session.user?.image}
-                          height={35}
-                          width={35}
-                          className="rounded-full"
-                          alt="pfp"
-                        />
+                      {session.user && (
+                        <svg
+                          className="block h-6 w-6 text-white"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth="1.5"
+                          stroke="currentColor"
+                          aria-hidden="true"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+                          />
+                        </svg>
                       )}
                     </button>
                   </div>
                   {showModal && (
                     <div
-                      className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                      className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md  bg-slate-800 py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
                       role="menu"
                       aria-orientation="vertical"
                       aria-labelledby="user-menu-button"
                     >
-                      <a
-                        href="http://localhost:3000/profile"
-                        className="block px-4 py-2 text-sm text-gray-700"
-                        role="menuitem"
-                      >
-                        Your Profile
-                      </a>
-                      <button
-                        className="block px-4 py-2 text-sm text-gray-700"
-                        onClick={() => signOut()}
-                      >
-                        Sign out
-                      </button>
+                      <ProfileButton />
+                      <LogoutButton />
                     </div>
                   )}
                 </div>
