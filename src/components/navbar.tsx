@@ -9,6 +9,7 @@ import {
   ProfileButton,
   RegisterButton,
 } from "@/components/buttons.component";
+import Link from "next/link";
 
 export default function Navbar() {
   const { data: session } = useSession();
@@ -64,12 +65,14 @@ export default function Navbar() {
           </div>
           <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
             <div className="flex flex-shrink-0 items-center">
-              <Image
-                width={150}
-                height={50}
-                src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/F1.svg/2560px-F1.svg.png"
-                alt="Your Company"
-              />
+              <Link href="/">
+                <Image
+                  width={150}
+                  height={50}
+                  src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/F1.svg/2560px-F1.svg.png"
+                  alt="Your Company"
+                />
+              </Link>
             </div>
             <div className="hidden sm:ml-6 sm:block">
               <div className="flex space-x-4">
