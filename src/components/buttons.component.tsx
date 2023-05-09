@@ -7,7 +7,7 @@ export const LoginButton = () => {
   return (
     <button
       onClick={() => signIn()}
-      className={`mt-5 text-gray-300 bg-gray-700 hover:bg-gray-800 hover:text-white rounded-md px-3 py-2 text-sm font-medium`}
+      className={` text-gray-300 bg-gray-700 hover:bg-gray-800 hover:text-white rounded-md px-3 py-2 text-sm font-medium`}
     >
       Sign in
     </button>
@@ -18,7 +18,7 @@ export const RegisterButton = () => {
   return (
     <Link
       href="/register"
-      className={`m-5 text-gray-300 bg-gray-700 hover:bg-gray-800 hover:text-white rounded-md px-3 py-2 text-sm font-medium`}
+      className={` text-gray-300 bg-gray-700 hover:bg-gray-800 hover:text-white rounded-md px-3 py-2 text-sm font-medium`}
     >
       Register
     </Link>
@@ -28,7 +28,7 @@ export const RegisterButton = () => {
 export const LogoutButton = () => {
   return (
     <button
-      onClick={() => signIn()}
+      onClick={() => signOut()}
       className={`m-5 text-gray-300 bg-gray-700 hover:bg-gray-800 hover:text-white rounded-md px-3 py-2 text-sm font-medium`}
     >
       Sign out
