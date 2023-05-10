@@ -11,8 +11,9 @@ datasource db {
 }
 
 model User {
-  id       String @id @default(uuid())
-  name     String
-  email    String @unique
-  password String
+  id          String  @id @unique @default(uuid())
+  name        String  @unique
+  email       String  @unique
+  password    String
+  whitelisted Boolean @default(false)
 }
