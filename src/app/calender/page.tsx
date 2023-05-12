@@ -30,6 +30,10 @@ export default function Calender() {
   const { calender, error, loading } = CalenderHook();
   if (calender) {
     let parsedCalender = JSON.parse(calender);
+    let raceAmount = parsedCalender.elements[1].attributes.total;
+    let season = parsedCalender.elements[1].elements[0].attributes.season;
+    let races = parsedCalender.elements[1].elements[0].elements;
+    console.log(parsedCalender.elements[1].elements[0].elements);
   }
   // async function getCalender() {
   // await axios

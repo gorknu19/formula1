@@ -1,31 +1,60 @@
 "use client";
-import { useSession, signIn, signOut } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
-import { useState } from "react";
-import { LoginButton, LogoutButton } from "@/components/buttons.component";
+import useSWR from "swr";
+import axios, { AxiosRequestConfig } from "axios";
+import { Teams } from "@/types/teams.types";
+import Link from "next/link";
+export const fetcher = (url: string, config?: RequestInit | undefined) =>
+  fetch(url, config).then((res) => {
+    if (!res.ok) {
+      throw new Error(res.statusText);
+    }
 
-export default function Navbar() {
-  const { data: session } = useSession();
-  if (session) {
-    return (
-      <>
-        <div className={`text-center content-center m-5 `}>
-          <h1 className="mb-5">
-            Hei, du er logget inn som: {session.user?.name}!
-          </h1>
-          <h1>Gmail: {session.user?.email}</h1>
+    return res.json();
+  });
 
-          <LogoutButton />
-        </div>
-      </>
-    );
+// const CalenderHook = () => {
+//   const { data: calender, error, isLoading } = useSWR("/api/calender", fetcher);
+//   return { calender, error, isLoading };
+// };
+
+export let CalenderHook = () => {
+  let { data, error, mutate } = useSWR(`/api/teams`, fetcher);
+
+  let loading = !data && !error;
+  if (data) {
+    data = JSON.parse(data);
+    data = data.elements[1].elements[0].elements;
+    console.log(data);
   }
+  return { teams: data, error, loading };
+};
 
+export default function Calender() {
+  const { data: session } = useSession();
+  const { teams, error, loading } = CalenderHook();
+  console.log(teams);
   return (
     <>
-      <div className={`text-center`}>
-        <h1>Du er ikke logget inn! Logg inn her:</h1>
-        <LoginButton />
+      <div className={`text-center content-center m-5 `}>
+        {teams &&
+          teams.map((o: Teams) => {
+            console.log(o);
+            return (
+              <div
+                key={o}
+                id={o.attributes.constructorId}
+                className={`bg-slate-800 m-10 rounded-md`}
+              >
+                <Link href={o.attributes.url}>
+                  <h1>{o.elements[0].elements[0].text}</h1>
+                  <p>Team Id: {o.attributes.constructorId}</p>
+                  <p>Nationality of Team: {o.elements[1].elements[0].text}</p>
+                </Link>
+              </div>
+            );
+          })}
       </div>
     </>
   );
