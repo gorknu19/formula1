@@ -1,32 +1,57 @@
 "use client";
-import { useSession, signIn, signOut } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
-import { useState } from "react";
-import { LoginButton, LogoutButton } from "@/components/buttons.component";
+import useSWR from "swr";
+import axios, { AxiosRequestConfig } from "axios";
+export const fetcher = (url: string, config?: RequestInit | undefined) =>
+  fetch(url, config).then((res) => {
+    if (!res.ok) {
+      throw new Error(res.statusText);
+    }
 
-export default function Navbar() {
+    return res.json();
+  });
+
+// const CalenderHook = () => {
+//   const { data: calender, error, isLoading } = useSWR("/api/calender", fetcher);
+//   return { calender, error, isLoading };
+// };
+
+export let CalenderHook = () => {
+  let { data, error, mutate } = useSWR(`/api/calender`, fetcher);
+
+  let loading = !data && !error;
+
+  return { calender: data, error, loading };
+};
+
+export default function Calender() {
   const { data: session } = useSession();
-  if (session) {
-    return (
-      <>
-        <div className={`text-center content-center m-5 `}>
-          <h1 className="mb-5">
-            Hei, du er logget inn som: {session.user?.name}!
-          </h1>
-          <h1>Gmail: {session.user?.email}</h1>
-
-          <LogoutButton />
-        </div>
-      </>
-    );
+  const { calender, error, loading } = CalenderHook();
+  if (calender) {
+    let parsedCalender = JSON.parse(calender);
   }
+  // async function getCalender() {
+  // await axios
+  //   .get("http://localhost:3000/api/calender")
+  //   .then((res) => (calender = res.data));
+  // }
+
+  // const getCalender = useCallback(async () => {
+  //   await axios
+  //     .get("http://localhost:3000/api/calender")
+  //     .then((res) => setCalender(res.data));
+  // }, []);
+
+  // useEffect(() => {
+  //   getCalender();
+  // }, [getCalender]);
+
+  // console.log(calender);
 
   return (
     <>
-      <div className={`text-center`}>
-        <h1>Du er ikke logget inn! Logg inn her:</h1>
-        <LoginButton />
-      </div>
+      <div className={`text-center content-center m-5 `}></div>
     </>
   );
 }
