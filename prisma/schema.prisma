@@ -11,20 +11,33 @@ datasource db {
 }
 
 model User {
-  id          String  @id @unique @default(uuid())
-  name        String  @unique
-  email       String  @unique
+  id          String    @id @unique @default(uuid())
+  name        String    @unique
+  email       String    @unique
   password    String
-  whitelisted Boolean @default(false)
+  whitelisted Boolean   @default(false)
   posts       Post[]
+  comments    Comment[]
 }
 
 model Post {
-  id        String   @id @unique @default(uuid())
+  id        String    @id @unique @default(uuid())
   title     String
+  content   String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
+  Comment   Comment[]
+}
+
+model Comment {
+  id        String   @id @default(uuid())
   content   String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   userId    String
   user      User     @relation(fields: [userId], references: [id])
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id])
 }
