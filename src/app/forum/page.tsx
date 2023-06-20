@@ -6,6 +6,7 @@ import { ToastContainer, toast } from "react-toastify";
 import useSWR from "swr";
 import { BsFillPlusSquareFill } from "react-icons/bs";
 import { createComment } from "./fetchRequests";
+import { NextRequest } from "next/server";
 
 export const fetcher = (url: string, config?: RequestInit | undefined) =>
   fetch(url).then((res) => {
@@ -65,7 +66,8 @@ export let PostsHook = () => {
 
 export default function Forum() {
   const { data: session } = useSession();
-  const [showModal, setShowModal] = useState<boolean>(false);
+  const [showCreatePostModal, setShowCreatePostModal] =
+    useState<boolean>(false);
   const {
     allPosts,
     error,
@@ -77,7 +79,7 @@ export default function Forum() {
     currentPage,
   } = PostsHook();
   function clickModal() {
-    setShowModal(!showModal);
+    setShowCreatePostModal(!showCreatePostModal);
   }
 
   if (!session?.user) {
@@ -131,6 +133,49 @@ export default function Forum() {
     console.log(test);
   }
 
+  async function handleDelete(req: any) {
+    const urlParams = new URLSearchParams();
+    console.log();
+
+    urlParams.append("postId", req.target.id.toString());
+    urlParams.append("posterId", req.target.parentElement.id.toString());
+
+    const options = {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+    };
+    console.log(req.target.id);
+    //@ts-ignore
+    let test = await fetch(`./api/forum?${urlParams}`, options)
+      .then(function (response) {
+        // The response is a Response instance.
+        // You parse the data into a useable format using `.json()`
+        return response.json();
+      })
+      .then(function (data) {
+        mutate();
+        toast.success("Post Deleted!", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
+
+        // `data` is the parsed version of the JSON returned from the above endpoint.
+        console.log(data);
+      });
+    console.log(test);
+    console.log("deleted");
+  }
+
+  function handleEdit() {
+    console.log("deleted");
+  }
+
   return (
     <>
       <div className={`text-center content-center m-5 `}>
@@ -168,6 +213,10 @@ export default function Forum() {
             <div id="postsContainer">
               {allPosts.map((o: any) => {
                 var mySqlDate = o.createdAt.slice(0, 19).replace("T", " ");
+                let createdPost = false;
+                //@ts-ignore
+                if (o.user.id === session.user?.id) createdPost = true;
+
                 return (
                   <div
                     className=" w-3/4 mx-auto bg-slate-800 rounded shadow-md p-4 m-10"
@@ -184,6 +233,24 @@ export default function Forum() {
                       <p className="text-sm">Created at: {mySqlDate}</p>
                       <p className="text-sm">{o.user.name}</p>
                     </div>
+                    {createdPost && (
+                      <div className="mt-4 flex justify-end" id={o.user.id}>
+                        <button
+                          className="px-2 py-1 bg-blue-500 text-white rounded-md mr-2"
+                          onClick={handleEdit}
+                          id={o.id}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          className="px-2 py-1 bg-red-500 text-white rounded-md"
+                          onClick={handleDelete}
+                          id={o.id}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    )}
                     <div className="mt-4">
                       <input
                         type="text"
@@ -226,7 +293,7 @@ export default function Forum() {
             </div>
           </>
         )}
-        {showModal && (
+        {showCreatePostModal && (
           <div className="fixed w-full p-4 md:inset-0 h-[calc(100%-1rem)] max-h-full text-center m-auto">
             <div className="relative w-full max-w-md max-h-full m-auto">
               <div className="bg-slate-500 rounded-lg shadow dark:bg-gray-700  border border-black ">

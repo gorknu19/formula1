@@ -52,3 +52,25 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json({ post });
 }
+export async function DELETE(req: NextRequest) {
+  const url = new URL(req.nextUrl);
+  const params = url.searchParams;
+  let postId = params.get("postId");
+  let posterId = params.get("posterId");
+  const secret = process.env.SECRET;
+  //@ts-ignore
+  const token = await getToken({ req, secret });
+  const userId = token?.id as string;
+  if (userId === posterId) {
+    console.log(postId);
+    const prisma = new PrismaClient();
+    const post = await prisma.post.delete({
+      where: {
+        //@ts-ignore
+        id: postId,
+      },
+    });
+    console.log({ post });
+    return NextResponse.json({ yuh: "yuh" });
+  } else return NextResponse.error();
+}
