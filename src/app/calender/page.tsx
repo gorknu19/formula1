@@ -1,16 +1,9 @@
-"use client";
-import { useSession } from "next-auth/react";
-import Image from "next/image";
-import useSWR from "swr";
-import axios, { AxiosRequestConfig } from "axios";
-export const fetcher = (url: string, config?: RequestInit | undefined) =>
-  fetch(url, config).then((res) => {
-    if (!res.ok) {
-      throw new Error(res.statusText);
-    }
-
-    return res.json();
-  });
+'use client';
+import { useSession } from 'next-auth/react';
+import Image from 'next/image';
+import useSWR from 'swr';
+import axios, { AxiosRequestConfig } from 'axios';
+import fetcher from '@/util/fetcher';
 
 // const CalenderHook = () => {
 //   const { data: calender, error, isLoading } = useSWR("/api/calender", fetcher);
