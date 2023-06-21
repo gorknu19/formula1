@@ -61,16 +61,18 @@ export async function DELETE(req: NextRequest) {
   //@ts-ignore
   const token = await getToken({ req, secret });
   const userId = token?.id as string;
-  if (userId === posterId) {
-    console.log(postId);
-    const prisma = new PrismaClient();
-    const post = await prisma.post.delete({
-      where: {
-        //@ts-ignore
-        id: postId,
-      },
-    });
-    console.log({ post });
-    return NextResponse.json({ yuh: "yuh" });
-  } else return NextResponse.error();
+
+  console.log(postId);
+  const prisma = new PrismaClient();
+  const post = await prisma.post.deleteMany({
+    where: {
+      //@ts-ignore
+      id: postId,
+      userId: userId,
+    },
+  });
+  console.log({ post });
+  return NextResponse.json({ yuh: "yuh" });
 }
+
+export async function PATCH(req: NextRequest) {}

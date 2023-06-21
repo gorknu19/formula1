@@ -1,16 +1,16 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 import { PrismaClient } from "@prisma/client";
 
-export async function GET(req: any) {
+export async function GET(req: NextRequest) {
   const prisma = new PrismaClient();
 
-  // const data = await req.json();
-  // console.log(data);
+  const data = await req.json();
+  console.log(data);
   const comment = await prisma.comment.findMany({
-    // where: {
-    //   postId: data.postId,
-    // },
+    where: {
+      postId: data.postId,
+    },
     include: {
       user: {
         select: {
@@ -23,7 +23,7 @@ export async function GET(req: any) {
   return NextResponse.json(comment.reverse());
 }
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   const prisma = new PrismaClient();
 
   const data = await req.json();
