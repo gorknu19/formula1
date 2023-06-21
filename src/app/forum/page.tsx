@@ -1,12 +1,13 @@
-"use client";
-import { useSession, signIn, signOut, getCsrfToken } from "next-auth/react";
-import { useState } from "react";
-import { LoginButton, LogoutButton } from "@/components/buttons.component";
-import { ToastContainer, toast } from "react-toastify";
-import useSWR from "swr";
-import { BsFillPlusSquareFill } from "react-icons/bs";
-import { createComment, createPost, handleDelete } from "./fetchRequests";
-import { NextRequest } from "next/server";
+'use client';
+import { useSession, signIn, signOut, getCsrfToken } from 'next-auth/react';
+import { useState } from 'react';
+import { LoginButton, LogoutButton } from '@/components/buttons.component';
+import { ToastContainer, toast } from 'react-toastify';
+import useSWR from 'swr';
+import { BsFillPlusSquareFill } from 'react-icons/bs';
+import { createComment, createPost, handleDelete } from './fetchRequests';
+import { NextRequest } from 'next/server';
+import UsePosts from '@/hooks/use-posts';
 
 export const fetcher = (url: string, config?: RequestInit | undefined) =>
   fetch(url).then((res) => {
@@ -20,57 +21,14 @@ export const fetcher = (url: string, config?: RequestInit | undefined) =>
 //   currentPage: number;
 //   pageSize: number;
 // }
-export let PostsHook = () => {
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [pageSize, setPageSize] = useState<number>(5);
-  const urlParams = new URLSearchParams();
-
-  urlParams.append("page", currentPage.toString());
-  urlParams.append("pageSize", pageSize.toString());
-
-  let { data, error, mutate } = useSWR(
-    `/api/forum?${urlParams.toString()}`,
-    fetcher,
-  );
-
-  let loading = !data && !error;
-
-  const nextPage = () => {
-    if (data?.postsLength / pageSize <= currentPage) {
-      toast.error("Already on last page!");
-      return console.log("Already on last page!");
-    }
-    setCurrentPage(currentPage + 1);
-  };
-  const prevPage = () => {
-    if (currentPage === 1) {
-      toast.error("Already on page 1!");
-      return console.log("cant go to page 0");
-    }
-    setCurrentPage(currentPage - 1);
-  };
-
-  const maxPage = data?.postsLength / pageSize;
-
-  return {
-    allPosts: data?.posts,
-    error,
-    loading,
-    mutate,
-    nextPage,
-    prevPage,
-    maxPage,
-    currentPage,
-  };
-};
 
 export default function Forum() {
   const { data: session } = useSession();
   const [showCreatePostModal, setShowCreatePostModal] =
     useState<boolean>(false);
   const [showEditModal, setShowEditModal] = useState<boolean>(false);
-  const [editText, setEditText] = useState<string>("");
-  const [editTitle, setEditTitle] = useState<string>("");
+  const [editText, setEditText] = useState<string>('');
+  const [editTitle, setEditTitle] = useState<string>('');
   const {
     allPosts,
     error,
@@ -80,7 +38,7 @@ export default function Forum() {
     prevPage,
     maxPage,
     currentPage,
-  } = PostsHook();
+  } = UsePosts();
 
   function clickModal() {
     setShowCreatePostModal(!showCreatePostModal);
@@ -145,7 +103,7 @@ export default function Forum() {
           <>
             <div id="postsContainer">
               {allPosts.map((o: any) => {
-                var mySqlDate = o.createdAt.slice(0, 19).replace("T", " ");
+                var mySqlDate = o.createdAt.slice(0, 19).replace('T', ' ');
                 let createdPost = false;
                 //@ts-ignore
                 if (o.user.id === session.user?.id) createdPost = true;
@@ -314,7 +272,7 @@ export default function Forum() {
                   className="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-800 dark:hover:text-white"
                   data-modal-hide="authentication-modal"
                   onClick={() => {
-                    clickEditModal("", "");
+                    clickEditModal('', '');
                   }}
                 >
                   <svg
@@ -377,13 +335,13 @@ export default function Forum() {
           </div>
         )}
         <ToastContainer
-          position={"top-right"}
+          position={'top-right'}
           autoClose={5000}
           hideProgressBar={false}
           closeOnClick={true}
           pauseOnHover={true}
           draggable={true}
-          theme={"dark"}
+          theme={'dark'}
         />
       </div>
     </>
