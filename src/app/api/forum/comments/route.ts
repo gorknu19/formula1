@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
   const secret = process.env.SECRET;
   //@ts-ignore
   const token = await getToken({ req, secret });
-
+  console.log(token);
   const userId = token?.id as string;
   console.log(userId);
 

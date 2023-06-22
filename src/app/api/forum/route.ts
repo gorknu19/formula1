@@ -61,18 +61,55 @@ export async function DELETE(req: NextRequest) {
   //@ts-ignore
   const token = await getToken({ req, secret });
   const userId = token?.id as string;
-
+  const whitelisted = token?.whitelisted;
   console.log(postId);
   const prisma = new PrismaClient();
-  const post = await prisma.post.deleteMany({
+  if (posterId === userId || whitelisted === true) {
+    const comments = await prisma.comment.deleteMany({
+      where: {
+        //@ts-ignore
+        postId: postId,
+      },
+    });
+    const post = await prisma.post.deleteMany({
+      where: {
+        //@ts-ignore
+        id: postId,
+      },
+    });
+
+    console.log({ post }, { comments });
+    return NextResponse.json({ post });
+  } else return NextResponse.json({ error: "not authorized" }, { status: 401 });
+}
+
+export async function PATCH(req: NextRequest) {
+  const prisma = new PrismaClient();
+  const url = new URL(req.nextUrl);
+  const params = url.searchParams;
+  let postId = params.get("postId");
+  let postTitle = params.get("postTitle");
+  let postText = params.get("postText");
+  const secret = process.env.SECRET;
+  //@ts-ignore
+  const token = await getToken({ req, secret });
+  const userId = token?.id as string;
+  if (!postTitle || !postText)
+    return NextResponse.json(
+      { error: "Invalid title or body" },
+      { status: 400 },
+    );
+  const post = await prisma.post.update({
     where: {
       //@ts-ignore
       id: postId,
-      userId: userId,
+      // userId: userId,
+    },
+
+    data: {
+      title: postTitle,
+      content: postText,
     },
   });
-  console.log({ post });
-  return NextResponse.json({ yuh: "yuh" });
+  return NextResponse.json({ post });
 }
-
-export async function PATCH(req: NextRequest) {}

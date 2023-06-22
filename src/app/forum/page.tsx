@@ -7,6 +7,7 @@ import useSWR from "swr";
 import { BsFillPlusSquareFill } from "react-icons/bs";
 import { createComment, createPost, handleDelete } from "./fetchRequests";
 import { NextRequest } from "next/server";
+import { getToken } from "next-auth/jwt";
 
 export const fetcher = (url: string, config?: RequestInit | undefined) =>
   fetch(url).then((res) => {
@@ -36,7 +37,7 @@ export let PostsHook = () => {
   let loading = !data && !error;
 
   const nextPage = () => {
-    if (data?.postsLength / pageSize <= currentPage) {
+    if (data && data.postsLength / pageSize <= currentPage) {
       toast.error("Already on last page!");
       return console.log("Already on last page!");
     }
@@ -50,7 +51,7 @@ export let PostsHook = () => {
     setCurrentPage(currentPage - 1);
   };
 
-  const maxPage = data?.postsLength / pageSize;
+  const maxPage = data && data.postsLength / pageSize;
 
   return {
     allPosts: data?.posts,
@@ -71,6 +72,7 @@ export default function Forum() {
   const [showEditModal, setShowEditModal] = useState<boolean>(false);
   const [editText, setEditText] = useState<string>("");
   const [editTitle, setEditTitle] = useState<string>("");
+  const [editPostId, setEditPostId] = useState<string>("");
   const {
     allPosts,
     error,
@@ -85,9 +87,11 @@ export default function Forum() {
   function clickModal() {
     setShowCreatePostModal(!showCreatePostModal);
   }
-  function clickEditModal(title: string, content: string) {
+  function clickEditModal(title: string, content: string, postId: string) {
     setEditTitle(title);
     setEditText(content);
+    setEditPostId(postId);
+
     setShowEditModal(!showEditModal);
     console.log(editTitle);
     console.log(editText);
@@ -104,11 +108,48 @@ export default function Forum() {
     );
   }
 
-  function handleEdit() {
-    // console.log(title);
-    // console.log(content);
-  }
+  async function handleEdit(
+    postTitle: string,
+    postText: string,
+    postId: string,
+  ) {
+    event?.preventDefault();
+    const urlParams = new URLSearchParams();
+    console.log();
 
+    urlParams.append("postTitle", postTitle);
+    urlParams.append("postText", postText);
+    urlParams.append("postId", postId);
+
+    const options = {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+    };
+    //@ts-ignore
+    let test = await fetch(`./api/forum?${urlParams}`, options)
+      .then(function (response) {
+        // The response is a Response instance.
+        // You parse the data into a useable format using `.json()`
+        return response.json();
+      })
+      .then(function (data) {
+        toast.success("🦄 Post Edited!", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
+
+        // `data` is the parsed version of the JSON returned from the above endpoint.
+        console.log(data);
+      });
+    console.log(test);
+  }
+  console.log(session);
   return (
     <>
       <div className={`text-center content-center m-5 `}>
@@ -144,11 +185,17 @@ export default function Forum() {
         {allPosts && (
           <>
             <div id="postsContainer">
-              {allPosts.map((o: any) => {
+              {allPosts.map((o: any, req: any) => {
                 var mySqlDate = o.createdAt.slice(0, 19).replace("T", " ");
                 let createdPost = false;
-                //@ts-ignore
-                if (o.user.id === session.user?.id) createdPost = true;
+
+                if (
+                  //@ts-ignore
+                  o.user.id === session.user?.id ||
+                  //@ts-ignore
+                  session.user?.whitelisted === true
+                )
+                  createdPost = true;
 
                 return (
                   <div
@@ -171,7 +218,7 @@ export default function Forum() {
                         <button
                           className="px-2 py-1 bg-blue-500 text-white rounded-md mr-2"
                           onClick={() => {
-                            clickEditModal(o.title, o.content);
+                            clickEditModal(o.title, o.content, o.id);
                           }}
                           id={o.id}
                         >
@@ -191,7 +238,7 @@ export default function Forum() {
                     <div className="mt-4">
                       <input
                         type="text"
-                        className="w-4/5 border border-gray-300 rounded-full m-2 p-2"
+                        className="w-4/5 border border-gray-300 rounded-full m-2 p-2 text-black"
                         placeholder="Add a comment"
                       />
                       <button
@@ -258,7 +305,7 @@ export default function Forum() {
                 <div className="px-6 py-6 lg:px-8">
                   <form
                     className="space-y-6"
-                    onSubmit={async (e) => {
+                    onSubmit={async () => {
                       await createPost(editTitle, editText);
                       clickModal();
                       mutate();
@@ -314,7 +361,7 @@ export default function Forum() {
                   className="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-800 dark:hover:text-white"
                   data-modal-hide="authentication-modal"
                   onClick={() => {
-                    clickEditModal("", "");
+                    clickEditModal("", "", "");
                   }}
                 >
                   <svg
@@ -333,7 +380,14 @@ export default function Forum() {
                   <span className="sr-only">Close modal</span>
                 </button>
                 <div className="px-6 py-6 lg:px-8">
-                  <form className="space-y-6" onSubmit={handleEdit}>
+                  <form
+                    className="space-y-6"
+                    onSubmit={async () => {
+                      await handleEdit(editTitle, editText, editPostId);
+                      mutate();
+                      clickEditModal("", "", "");
+                    }}
+                  >
                     <div>
                       <h1>Edit post</h1>
                       <label className="block mb-2 text-sm font-medium text-white">
@@ -368,7 +422,7 @@ export default function Forum() {
                       type="submit"
                       className="w-full text-white bg-slate-700 hover:bg-slate-900 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                     >
-                      Create post
+                      Edit post
                     </button>
                   </form>
                 </div>

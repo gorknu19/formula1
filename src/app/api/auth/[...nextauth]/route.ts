@@ -42,6 +42,7 @@ export const authOptions: NextAuthOptions = {
           id: user.id,
           email: user.email,
           name: user.name,
+          whitelisted: user.whitelisted,
         };
       },
     }),
@@ -54,7 +55,7 @@ export const authOptions: NextAuthOptions = {
         user: {
           ...session.user,
           id: token.id,
-          randomKey: token.randomKey,
+          whitelisted: token.whitelisted,
         },
       };
     },
@@ -65,6 +66,7 @@ export const authOptions: NextAuthOptions = {
         return {
           ...token,
           id: u.id,
+          whitelisted: u.whitelisted,
           randomKey: u.randomKey,
         };
       }
