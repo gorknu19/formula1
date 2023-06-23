@@ -3,67 +3,19 @@ import { useSession, signIn, signOut, getCsrfToken } from "next-auth/react";
 import { useState } from "react";
 import { LoginButton, LogoutButton } from "@/components/buttons.component";
 import { ToastContainer, toast } from "react-toastify";
-import useSWR from "swr";
 import { BsFillPlusSquareFill } from "react-icons/bs";
-import { createComment, createPost, handleDelete } from "./fetchRequests";
+import { createPost, handleDelete } from "./fetchrequests/posts";
+import { createComment } from "./fetchrequests/comments";
 import { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
+import { Posts, Comment } from "@/types/forum.types";
+import Comments from "@/components/comments";
+import { PostsHook } from "@/hooks/posts.hook";
 
-export const fetcher = (url: string, config?: RequestInit | undefined) =>
-  fetch(url).then((res) => {
-    if (!res.ok) {
-      throw new Error(res.statusText);
-    }
-
-    return res.json();
-  });
 // interface PostsHookParams {
 //   currentPage: number;
 //   pageSize: number;
 // }
-export let PostsHook = () => {
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [pageSize, setPageSize] = useState<number>(5);
-  const urlParams = new URLSearchParams();
-
-  urlParams.append("page", currentPage.toString());
-  urlParams.append("pageSize", pageSize.toString());
-
-  let { data, error, mutate } = useSWR(
-    `/api/forum?${urlParams.toString()}`,
-    fetcher,
-  );
-
-  let loading = !data && !error;
-
-  const nextPage = () => {
-    if (data && data.postsLength / pageSize <= currentPage) {
-      toast.error("Already on last page!");
-      return console.log("Already on last page!");
-    }
-    setCurrentPage(currentPage + 1);
-  };
-  const prevPage = () => {
-    if (currentPage === 1) {
-      toast.error("Already on page 1!");
-      return console.log("cant go to page 0");
-    }
-    setCurrentPage(currentPage - 1);
-  };
-
-  const maxPage = data && data.postsLength / pageSize;
-
-  return {
-    allPosts: data?.posts,
-    error,
-    loading,
-    mutate,
-    nextPage,
-    prevPage,
-    maxPage,
-    currentPage,
-  };
-};
 
 export default function Forum() {
   const { data: session } = useSession();
@@ -149,7 +101,7 @@ export default function Forum() {
       });
     console.log(test);
   }
-  console.log(session);
+  console.log(allPosts);
   return (
     <>
       <div className={`text-center content-center m-5 `}>
@@ -185,13 +137,12 @@ export default function Forum() {
         {allPosts && (
           <>
             <div id="postsContainer">
-              {allPosts.map((o: any, req: any) => {
-                var mySqlDate = o.createdAt.slice(0, 19).replace("T", " ");
+              {allPosts.map((post: Posts, req: NextRequest) => {
+                var mySqlDate = post.createdAt.slice(0, 19).replace("T", " ");
                 let createdPost = false;
-
                 if (
                   //@ts-ignore
-                  o.user.id === session.user?.id ||
+                  post.user.id === session.user?.id ||
                   //@ts-ignore
                   session.user?.whitelisted === true
                 )
@@ -200,34 +151,34 @@ export default function Forum() {
                 return (
                   <div
                     className=" w-3/4 mx-auto bg-slate-800 rounded shadow-md p-4 m-10"
-                    key={o.id}
-                    id={o.id}
+                    key={post.id}
+                    id={post.id}
                   >
                     <h2 className="text-xl font-bold mb-2 whitespace-normal">
-                      {o.title}
+                      {post.title}
                     </h2>
                     <p className="text-gray-300 mb-4 whitespace-normal ">
-                      {o.content}
+                      {post.content}
                     </p>
                     <div className="flex justify-between items-center text-white mt-10">
-                      <p className="text-sm">Created at: {mySqlDate}</p>
-                      <p className="text-sm">{o.user.name}</p>
+                      <p className="text-sm">{mySqlDate}</p>
+                      <p className="text-sm">{post.user.name}</p>
                     </div>
                     {createdPost && (
-                      <div className="mt-4 flex justify-end" id={o.user.id}>
+                      <div className="mt-4 flex justify-end" id={post.user.id}>
                         <button
                           className="px-2 py-1 bg-blue-500 text-white rounded-md mr-2"
                           onClick={() => {
-                            clickEditModal(o.title, o.content, o.id);
+                            clickEditModal(post.title, post.content, post.id);
                           }}
-                          id={o.id}
+                          id={post.id}
                         >
                           Edit
                         </button>
                         <button
                           className="px-2 py-1 bg-red-500 text-white rounded-md"
                           onClick={async () => {
-                            await handleDelete(o.id);
+                            await handleDelete(post.id);
                             mutate();
                           }}
                         >
@@ -248,13 +199,7 @@ export default function Forum() {
                         add comment
                       </button>
                     </div>
-                    <div className="mt-5">
-                      <h3 className="text-lg font-bold mb-2">Comments</h3>
-                      <div className="bg-slate-900 p-4 rounded">
-                        <p>Comment 1</p>
-                        <p>Comment 2</p>
-                      </div>
-                    </div>
+                    <Comments comments={post.Comment} postId={post.id} />
                   </div>
                 );
               })}
