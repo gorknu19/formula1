@@ -49,3 +49,28 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json({ comment });
 }
+
+export async function DELETE(req: NextRequest) {
+  const url = new URL(req.nextUrl);
+  const params = url.searchParams;
+  let commentId = params.get("commentId");
+  let commentPosterId = params.get("commentPosterId");
+  const secret = process.env.SECRET;
+  //@ts-ignore
+  const token = await getToken({ req, secret });
+  const userId = token?.id as string;
+  const whitelisted = token?.whitelisted;
+  console.log(commentId);
+  const prisma = new PrismaClient();
+  if (commentPosterId === userId || whitelisted === true) {
+    const comment = await prisma.comment.deleteMany({
+      where: {
+        //@ts-ignore
+        id: commentId,
+      },
+    });
+
+    console.log({ comment });
+    return NextResponse.json({ comment });
+  } else return NextResponse.json({ error: "not authorized" }, { status: 401 });
+}

@@ -22,6 +22,8 @@ export default function Forum() {
   const [showCreatePostModal, setShowCreatePostModal] =
     useState<boolean>(false);
   const [showEditModal, setShowEditModal] = useState<boolean>(false);
+  const [showCommentEditModal, setShowCommentEditModal] =
+    useState<boolean>(false);
   const [editText, setEditText] = useState<string>("");
   const [editTitle, setEditTitle] = useState<string>("");
   const [editPostId, setEditPostId] = useState<string>("");
@@ -46,6 +48,17 @@ export default function Forum() {
 
     setShowEditModal(!showEditModal);
     console.log(editTitle);
+    console.log(editText);
+  }
+  function clickEditCommentModal(
+    title: string,
+    content: string,
+    postId: string,
+  ) {
+    setEditText(content);
+    setEditPostId(postId);
+
+    setShowCommentEditModal(!showCommentEditModal);
     console.log(editText);
   }
 
@@ -375,6 +388,7 @@ export default function Forum() {
             </div>
           </div>
         )}
+
         <ToastContainer
           position={"top-right"}
           autoClose={5000}

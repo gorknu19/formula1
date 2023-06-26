@@ -1,3 +1,4 @@
+import { NextRequest } from "next/server";
 import { toast } from "react-toastify";
 
 export async function createComment(req: any) {
@@ -37,11 +38,15 @@ export async function createComment(req: any) {
   console.log(test);
 }
 
-export async function handleCommentDelete(commentId: string) {
+export async function handleCommentDelete(
+  commentId: string,
+  commentPosterId: string,
+) {
   const urlParams = new URLSearchParams();
   console.log();
 
   urlParams.append("commentId", commentId);
+  urlParams.append("commentPosterId", commentPosterId);
 
   const options = {
     method: "DELETE",
