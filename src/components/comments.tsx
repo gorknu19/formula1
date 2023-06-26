@@ -1,11 +1,12 @@
+import { CommentsHook } from "@/hooks/comments.hook";
 import { Comment } from "@/types/forum.types";
 
 interface CommentsProps {
-  comments?: Comment[];
   postId: string;
 }
 
-export default function Comments({ comments }: CommentsProps) {
+export default function Comments({ postId }: CommentsProps) {
+  const { comments, error, loading, mutate } = CommentsHook(postId);
   function handleEditComment(id: string): void {
     throw new Error("Function not implemented.");
   }

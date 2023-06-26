@@ -4,12 +4,15 @@ import { PrismaClient } from "@prisma/client";
 
 export async function GET(req: NextRequest) {
   const prisma = new PrismaClient();
+  const url = new URL(req.nextUrl);
+  const params = url.searchParams;
+  let postId = params.get("postId");
+  if (!postId)
+    return NextResponse.json({ error: "no post ID" }, { status: 400 });
 
-  const data = await req.json();
-  console.log(data);
   const comment = await prisma.comment.findMany({
     where: {
-      postId: data.postId,
+      postId: postId,
     },
     include: {
       user: {

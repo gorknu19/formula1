@@ -199,7 +199,7 @@ export default function Forum() {
                         add comment
                       </button>
                     </div>
-                    <Comments comments={post.Comment} postId={post.id} />
+                    <Comments postId={post.id} />
                   </div>
                 );
               })}
