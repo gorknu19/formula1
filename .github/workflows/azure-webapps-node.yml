@@ -38,13 +38,26 @@ jobs:
       #   with:
       #     node-version: ${{ env.NODE_VERSION }}
       #     cache: "npm"
+      - name: stop-webserver
+        run: |
+          pm2 stop .\ecosystem.config.js
+
+      - name: cd to deploy folder if exists or create it (Powershell)
+        run: |
+          if (Test-Path -Path "C:\deploy") {
+          } else {
+            New-Item -Path "C:\deploy" -ItemType "directory"
+          }
+          Copy-Item -Path ".\*" -Destination "C:\deploy" -Recurse -Force
 
       - name: npm install, prisma gen, build
         run: |
+          cd "c:\deploy"
           npm install
           npx prisma generate
           npm run build --if-present
 
       - name: run pm2-start
         run: |
+          cd "c:\deploy"
           pm2 startOrRestart .\ecosystem.config.js
