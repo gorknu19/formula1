@@ -33,11 +33,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
+      # - name: Set up Node.js
+      #   uses: actions/setup-node@v3
+      #   with:
+      #     node-version: ${{ env.NODE_VERSION }}
+      #     cache: "npm"
 
       - name: npm install, prisma gen, build
         run: |
