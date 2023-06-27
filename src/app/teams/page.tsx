@@ -5,31 +5,12 @@ import useSWR from "swr";
 import axios, { AxiosRequestConfig } from "axios";
 import { Teams } from "@/types/teams.types";
 import Link from "next/link";
-export const fetcher = (url: string, config?: RequestInit | undefined) =>
-  fetch(url, config).then((res) => {
-    if (!res.ok) {
-      throw new Error(res.statusText);
-    }
-
-    return res.json();
-  });
+import { CalenderHook } from "@/hooks/calender.hook";
 
 // const CalenderHook = () => {
 //   const { data: calender, error, isLoading } = useSWR("/api/calender", fetcher);
 //   return { calender, error, isLoading };
 // };
-
-export let CalenderHook = () => {
-  let { data, error, mutate } = useSWR(`/api/teams`, fetcher);
-
-  let loading = !data && !error;
-  if (data) {
-    data = JSON.parse(data);
-    data = data.elements[1].elements[0].elements;
-    console.log(data);
-  }
-  return { teams: data, error, loading };
-};
 
 export default function Calender() {
   const { data: session } = useSession();
