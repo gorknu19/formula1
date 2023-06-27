@@ -19,35 +19,32 @@
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   workflow_dispatch:
 
 env:
-  AZURE_WEBAPP_NAME: your-app-name    # set this to your application's name
-  AZURE_WEBAPP_PACKAGE_PATH: '.'      # set this to the path to your web app project, defaults to the repository root
-  NODE_VERSION: '20.x'                # set this to the node version to use
+  AZURE_WEBAPP_NAME: your-app-name # set this to your application's name
+  AZURE_WEBAPP_PACKAGE_PATH: "." # set this to the path to your web app project, defaults to the repository root
+  NODE_VERSION: "20.x" # set this to the node version to use
 
 jobs:
   build:
     runs-on: self-hosted
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ env.NODE_VERSION }}
-        cache: 'npm'
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
 
-    - name: npm install, prisma gen, build
-      run: |
-        npm install
-        npx prisma generate
-        npm run build --if-present
+      - name: npm install, prisma gen, build
+        run: |
+          npm install
+          npx prisma generate
+          npm run build --if-present
 
-    - name: Upload artifact for deployment job
-      uses: actions/upload-artifact@v3
-      with:
-        name: node-app
-        path: .
-
+      - name: run pm2-start
+        run: |
+          pm2 startOrRestart .\ecosystem.config.js
