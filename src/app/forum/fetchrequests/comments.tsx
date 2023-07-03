@@ -77,3 +77,40 @@ export async function handleCommentDelete(
   console.log(test);
   console.log("deleted");
 }
+
+export async function handleEdit(postText: string, postId: string) {
+  event?.preventDefault();
+  const urlParams = new URLSearchParams();
+  console.log();
+
+  urlParams.append("postText", postText);
+  urlParams.append("postId", postId);
+
+  const options = {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+  };
+  //@ts-ignore
+  let test = await fetch(`./api/forum/comments?${urlParams}`, options)
+    .then(function (response) {
+      // The response is a Response instance.
+      // You parse the data into a useable format using `.json()`
+      return response.json();
+    })
+    .then(function (data) {
+      toast.success("🦄 Post Edited!", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
+
+      // `data` is the parsed version of the JSON returned from the above endpoint.
+      console.log(data);
+    });
+  console.log(test);
+}

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { LoginButton, LogoutButton } from "@/components/buttons.component";
 import { ToastContainer, toast } from "react-toastify";
 import { BsFillPlusSquareFill } from "react-icons/bs";
-import { createPost, handleDelete } from "./fetchrequests/posts";
+import { createPost, handleDelete, handleEdit } from "./fetchrequests/posts";
 import { createComment } from "./fetchrequests/comments";
 import { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
@@ -73,47 +73,6 @@ export default function Forum() {
     );
   }
 
-  async function handleEdit(
-    postTitle: string,
-    postText: string,
-    postId: string,
-  ) {
-    event?.preventDefault();
-    const urlParams = new URLSearchParams();
-    console.log();
-
-    urlParams.append("postTitle", postTitle);
-    urlParams.append("postText", postText);
-    urlParams.append("postId", postId);
-
-    const options = {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-    };
-    //@ts-ignore
-    let test = await fetch(`./api/forum?${urlParams}`, options)
-      .then(function (response) {
-        // The response is a Response instance.
-        // You parse the data into a useable format using `.json()`
-        return response.json();
-      })
-      .then(function (data) {
-        toast.success("🦄 Post Edited!", {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "dark",
-        });
-
-        // `data` is the parsed version of the JSON returned from the above endpoint.
-        console.log(data);
-      });
-    console.log(test);
-  }
   console.log(allPosts);
   return (
     <>

@@ -1,4 +1,7 @@
-import { handleCommentDelete } from "@/app/forum/fetchrequests/comments";
+import {
+  handleCommentDelete,
+  handleEdit,
+} from "@/app/forum/fetchrequests/comments";
 import { CommentsHook } from "@/hooks/comments.hook";
 import { Comment } from "@/types/forum.types";
 import { useState } from "react";
@@ -28,8 +31,6 @@ export default function Comments({ postId }: CommentsProps) {
         No comments on this post yet!
       </h3>
     );
-
-  function handleCommentEdit() {}
 
   return (
     comments[0] && (
@@ -100,7 +101,7 @@ export default function Comments({ postId }: CommentsProps) {
                   <form
                     className="space-y-6"
                     onSubmit={async () => {
-                      await handleCommentEdit();
+                      await handleEdit(editText, editPostId);
                       mutate();
                       clickEditCommentModal("", "");
                     }}

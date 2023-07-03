@@ -74,3 +74,32 @@ export async function DELETE(req: NextRequest) {
     return NextResponse.json({ comment });
   } else return NextResponse.json({ error: "not authorized" }, { status: 401 });
 }
+
+export async function PATCH(req: NextRequest) {
+  const prisma = new PrismaClient();
+  const url = new URL(req.nextUrl);
+  const params = url.searchParams;
+  let commentId = params.get("postId");
+  let postText = params.get("postText");
+  const secret = process.env.SECRET;
+  //@ts-ignore
+  const token = await getToken({ req, secret });
+  const userId = token?.id as string;
+  if (!postText)
+    return NextResponse.json(
+      { error: "Invalid title or body" },
+      { status: 400 },
+    );
+  const post = await prisma.comment.update({
+    where: {
+      //@ts-ignore
+      id: commentId,
+      // userId: userId,
+    },
+
+    data: {
+      content: postText,
+    },
+  });
+  return NextResponse.json({ post });
+}
