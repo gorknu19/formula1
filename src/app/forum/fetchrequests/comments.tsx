@@ -78,13 +78,18 @@ export async function handleCommentDelete(
   console.log("deleted");
 }
 
-export async function handleEdit(postText: string, postId: string) {
+export async function handleEdit(
+  commentText: string,
+  commentId: string,
+  commentPosterId: string,
+) {
   event?.preventDefault();
   const urlParams = new URLSearchParams();
   console.log();
 
-  urlParams.append("postText", postText);
-  urlParams.append("postId", postId);
+  urlParams.append("postText", commentText);
+  urlParams.append("postId", commentId);
+  urlParams.append("commentPosterId", commentPosterId);
 
   const options = {
     method: "PATCH",

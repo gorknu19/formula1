@@ -1,5 +1,5 @@
 "use client";
-import { useSession, signIn, signOut, getCsrfToken } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { LoginButton, LogoutButton } from "@/components/buttons.component";
 import { ToastContainer, toast } from "react-toastify";
@@ -48,17 +48,6 @@ export default function Forum() {
 
     setShowEditModal(!showEditModal);
     console.log(editTitle);
-    console.log(editText);
-  }
-  function clickEditCommentModal(
-    title: string,
-    content: string,
-    postId: string,
-  ) {
-    setEditText(content);
-    setEditPostId(postId);
-
-    setShowCommentEditModal(!showCommentEditModal);
     console.log(editText);
   }
 
@@ -158,19 +147,7 @@ export default function Forum() {
                         </button>
                       </div>
                     )}
-                    <div className="mt-4">
-                      <input
-                        type="text"
-                        className="w-4/5 border border-gray-300 rounded-full m-2 p-2 text-black"
-                        placeholder="Add a comment"
-                      />
-                      <button
-                        className="rounded-full bg-gray-700 p-2 inline-flex items-center justify-center"
-                        onClick={createComment}
-                      >
-                        add comment
-                      </button>
-                    </div>
+
                     <Comments postId={post.id} />
                   </div>
                 );

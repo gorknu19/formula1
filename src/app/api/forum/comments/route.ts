@@ -80,25 +80,37 @@ export async function PATCH(req: NextRequest) {
   const url = new URL(req.nextUrl);
   const params = url.searchParams;
   let commentId = params.get("postId");
-  let postText = params.get("postText");
+  let commentText = params.get("postText");
+  let commentPosterId = params.get("commentPosterId");
   const secret = process.env.SECRET;
   //@ts-ignore
   const token = await getToken({ req, secret });
   const userId = token?.id as string;
-  if (!postText)
+  const whitelisted = token?.whitelisted;
+
+  if (!commentText)
     return NextResponse.json(
-      { error: "Invalid title or body" },
+      { error: "Invalid comment text" },
       { status: 400 },
     );
+  if (!commentId)
+    return NextResponse.json(
+      { error: "comment ID not specified" },
+      { status: 400 },
+    );
+  if (userId !== commentPosterId && whitelisted !== true)
+    return NextResponse.json(
+      { error: "Dont have access to changing this comment!" },
+      { status: 401 },
+    );
+
   const post = await prisma.comment.update({
     where: {
-      //@ts-ignore
       id: commentId,
-      // userId: userId,
     },
 
     data: {
-      content: postText,
+      content: commentText,
     },
   });
   return NextResponse.json({ post });
