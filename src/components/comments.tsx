@@ -36,9 +36,27 @@ export default function Comments({ postId }: CommentsProps) {
   console.log(comments);
   if (comments === undefined || !comments[0])
     return (
-      <h3 className="text-lg font-bold mb-2 pt-3">
-        No comments on this post yet!
-      </h3>
+      <>
+        <div className="mt-4">
+          <input
+            type="text"
+            className="w-4/5 border border-gray-300 rounded-full m-2 p-2 text-black"
+            placeholder="Add a comment"
+          />
+          <button
+            className="rounded-full bg-gray-700 p-2 inline-flex items-center justify-center"
+            onClick={async (req) => {
+              await createComment(req);
+              mutate();
+            }}
+          >
+            add comment
+          </button>
+        </div>
+        <h3 className="text-lg font-bold mb-2 pt-3">
+          No comments on this post yet!
+        </h3>
+      </>
     );
 
   return (

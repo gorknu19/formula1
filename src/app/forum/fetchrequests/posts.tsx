@@ -1,10 +1,12 @@
 import { toast } from "react-toastify";
 
-export async function handleDelete(postId: string) {
+export async function handleDelete(postId: string, posterId: string) {
+  console.log(posterId);
   const urlParams = new URLSearchParams();
   console.log();
 
   urlParams.append("postId", postId);
+  urlParams.append("posterId", posterId);
 
   const options = {
     method: "DELETE",

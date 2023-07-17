@@ -108,7 +108,7 @@ export default function Forum() {
                   session.user?.whitelisted === true
                 )
                   createdPost = true;
-
+                console.log(post.user.id);
                 return (
                   <div
                     className=" w-3/4 mx-auto bg-slate-800 rounded shadow-md p-4 m-10"
@@ -139,7 +139,7 @@ export default function Forum() {
                         <button
                           className="px-2 py-1 bg-red-500 text-white rounded-md"
                           onClick={async () => {
-                            await handleDelete(post.id);
+                            await handleDelete(post.id, post.user.id);
                             mutate();
                           }}
                         >
@@ -147,7 +147,6 @@ export default function Forum() {
                         </button>
                       </div>
                     )}
-
                     <Comments postId={post.id} />
                   </div>
                 );

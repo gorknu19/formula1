@@ -3,6 +3,7 @@ import { toast } from "react-toastify";
 
 export async function createComment(req: any) {
   event?.preventDefault();
+
   const body = {
     commentBody: req.target.parentElement.firstChild.value,
     postId: req.target.parentElement.parentElement.id,
@@ -18,7 +19,7 @@ export async function createComment(req: any) {
     .then(function (response) {
       // The response is a Response instance.
       // You parse the data into a useable format using `.json()`
-      return response.json();
+      // return response.json();
     })
     .then(function (data) {
       toast.success("🦄 Comment created!", {
