@@ -36,7 +36,7 @@ export default function Forum() {
     prevPage,
     maxPage,
     currentPage,
-  } = PostsHook();
+  } = PostsHook("");
 
   function clickModal() {
     setShowCreatePostModal(!showCreatePostModal);
@@ -47,8 +47,6 @@ export default function Forum() {
     setEditPostId(postId);
 
     setShowEditModal(!showEditModal);
-    console.log(editTitle);
-    console.log(editText);
   }
 
   if (!session?.user) {
@@ -62,7 +60,6 @@ export default function Forum() {
     );
   }
 
-  console.log(allPosts);
   return (
     <>
       <div className={`text-center content-center m-5 `}>
@@ -108,7 +105,6 @@ export default function Forum() {
                   session.user?.whitelisted === true
                 )
                   createdPost = true;
-                console.log(post.user.id);
                 return (
                   <div
                     className=" w-3/4 mx-auto bg-slate-800 rounded shadow-md p-4 m-10"
@@ -151,6 +147,9 @@ export default function Forum() {
                   </div>
                 );
               })}
+              <h1>
+                {currentPage} / {Math.ceil(maxPage)}
+              </h1>
               {currentPage > 1 && (
                 <button
                   onClick={prevPage}

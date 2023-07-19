@@ -31,9 +31,7 @@ export default function Comments({ postId }: CommentsProps) {
     setCommentUserId(commentPosterId);
 
     setShowCommentEditModal(!showCommentEditModal);
-    console.log(editText);
   }
-  console.log(comments);
   if (comments === undefined || !comments[0])
     return (
       <>

@@ -8,10 +8,12 @@ export async function GET(req: NextRequest) {
   const params = url.searchParams;
   let pageSize = parseInt(params.get("pageSize") || "10");
   let page = parseInt(params.get("page") || "1");
-
+  let userId = params.get("userId");
+  console.log(userId);
   const postsLength = await prisma.post.count();
 
   const posts = await prisma.post.findMany({
+    where: { ...(userId ? { userId: userId } : {}) },
     skip: (page - 1) * pageSize, // Calculate the number of records to skip
     take: pageSize, // Set the number of records to take per page
     orderBy: {

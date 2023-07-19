@@ -8,7 +8,6 @@ export let CalenderHook = () => {
   if (data) {
     data = JSON.parse(data);
     data = data.elements[1].elements[0].elements;
-    console.log(data);
   }
   return { teams: data, error, loading };
 };

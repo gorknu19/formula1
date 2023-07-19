@@ -1,10 +1,11 @@
+"use client";
 import { PostsHook } from "@/hooks/posts.hook";
 import { useSearchParams } from "next/navigation";
 // how do i type a dynamic route in next.js?
 
-const ProfilePosts = () => {
-  const params = useSearchParams();
-  const id = params?.get("id");
+const ProfilePosts = (context: any) => {
+  const id = context.params?.userid;
+
   console.log(id);
   if (!id) {
     return <h1>Not a valid user</h1>;
@@ -19,6 +20,8 @@ const ProfilePosts = () => {
     maxPage,
     currentPage,
   } = PostsHook(id);
+
+  console.log(allPosts);
   return (
     <div>
       <div className="w-1/2 top-0 p-2">{id}</div>

@@ -3,14 +3,18 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import useSWR from "swr";
 
-export let PostsHook = () => {
+export let PostsHook = (userId: string) => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(5);
   const urlParams = new URLSearchParams();
-
+  console.log(userId);
   urlParams.append("page", currentPage.toString());
   urlParams.append("pageSize", pageSize.toString());
+  if (userId.length > 15) urlParams.append("userId", userId);
 
+  // if (userId?.length > 10) {
+  //   console.log(userId);
+  // }
   let { data, error, mutate } = useSWR(
     `/api/forum?${urlParams.toString()}`,
     fetcher,
