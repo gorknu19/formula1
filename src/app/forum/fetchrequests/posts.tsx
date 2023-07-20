@@ -13,7 +13,7 @@ export async function handleDelete(postId: string, posterId: string) {
     headers: { "Content-Type": "application/json" },
   };
   //@ts-ignore
-  let test = await fetch(`./api/forum?${urlParams}`, options)
+  let test = await fetch(`/api/forum?${urlParams}`, options)
     .then(function (response) {
       // The response is a Response instance.
       // You parse the data into a useable format using `.json()`
@@ -52,7 +52,7 @@ export async function createPost(postTitle: string, postText: string) {
     headers: { "Content-Type": "application/json" },
   };
   //@ts-ignore
-  let test = await fetch("./api/forum", options)
+  let test = await fetch("/api/forum", options)
     .then(function (response) {
       // The response is a Response instance.
       // You parse the data into a useable format using `.json()`
@@ -94,7 +94,7 @@ export async function handleEdit(
     headers: { "Content-Type": "application/json" },
   };
   //@ts-ignore
-  let test = await fetch(`./api/forum?${urlParams}`, options)
+  let test = await fetch(`/api/forum?${urlParams}`, options)
     .then(function (response) {
       // The response is a Response instance.
       // You parse the data into a useable format using `.json()`

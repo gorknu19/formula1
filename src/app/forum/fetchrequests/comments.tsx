@@ -15,7 +15,7 @@ export async function createComment(req: any) {
     headers: { "Content-Type": "application/json" },
   };
   //@ts-ignore
-  let test = await fetch("./api/forum/comments", options)
+  let test = await fetch("/api/forum/comments", options)
     .then(function (response) {
       // The response is a Response instance.
       // You parse the data into a useable format using `.json()`
@@ -54,7 +54,7 @@ export async function handleCommentDelete(
     headers: { "Content-Type": "application/json" },
   };
   //@ts-ignore
-  let test = await fetch(`./api/forum/comments?${urlParams}`, options)
+  let test = await fetch(`/api/forum/comments?${urlParams}`, options)
     .then(function (response) {
       // The response is a Response instance.
       // You parse the data into a useable format using `.json()`
@@ -97,7 +97,7 @@ export async function handleEdit(
     headers: { "Content-Type": "application/json" },
   };
   //@ts-ignore
-  let test = await fetch(`./api/forum/comments?${urlParams}`, options)
+  let test = await fetch(`/api/forum/comments?${urlParams}`, options)
     .then(function (response) {
       // The response is a Response instance.
       // You parse the data into a useable format using `.json()`

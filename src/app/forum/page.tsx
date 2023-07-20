@@ -22,8 +22,6 @@ export default function Forum() {
   const [showCreatePostModal, setShowCreatePostModal] =
     useState<boolean>(false);
   const [showEditModal, setShowEditModal] = useState<boolean>(false);
-  const [showCommentEditModal, setShowCommentEditModal] =
-    useState<boolean>(false);
   const [editText, setEditText] = useState<string>("");
   const [editTitle, setEditTitle] = useState<string>("");
   const [editPostId, setEditPostId] = useState<string>("");
@@ -92,10 +90,17 @@ export default function Forum() {
             </div>
           </>
         )}
+        {error && (
+          <>
+            <div>
+              <h1>Couldnt fetch posts!</h1>
+            </div>
+          </>
+        )}
         {allPosts && (
           <>
             <div id="postsContainer">
-              {allPosts.map((post: Posts, req: NextRequest) => {
+              {allPosts.map((post: Posts) => {
                 var mySqlDate = post.createdAt.slice(0, 19).replace("T", " ");
                 let createdPost = false;
                 if (

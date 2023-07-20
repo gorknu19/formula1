@@ -79,31 +79,31 @@ export default function Navbar() {
             <div className="hidden sm:ml-6 sm:block">
               <div className="flex space-x-4">
                 <a
-                  href="./teams"
+                  href="/teams"
                   className="text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium"
                 >
                   Teams
                 </a>
                 <a
-                  href="./standings"
+                  href="/standings"
                   className="text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium"
                 >
                   Standings
                 </a>
                 <a
-                  href="./calender"
+                  href="/calender"
                   className="text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium"
                 >
                   Calendar
                 </a>
                 <a
-                  href="./races"
+                  href="/races"
                   className="text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium"
                 >
                   Find Races
                 </a>
                 <a
-                  href="./forum"
+                  href="/forum"
                   className="text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium"
                 >
                   Forum

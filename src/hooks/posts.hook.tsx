@@ -36,7 +36,7 @@ export let PostsHook = (userId: string) => {
     }
     setCurrentPage(currentPage - 1);
   };
-
+  console.log(data?.posts.length);
   const maxPage = data && data.postsLength / pageSize;
 
   return {

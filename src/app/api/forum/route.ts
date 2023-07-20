@@ -9,8 +9,9 @@ export async function GET(req: NextRequest) {
   let pageSize = parseInt(params.get("pageSize") || "10");
   let page = parseInt(params.get("page") || "1");
   let userId = params.get("userId");
-  console.log(userId);
-  const postsLength = await prisma.post.count();
+  const postsLength = await prisma.post.count({
+    where: { ...(userId ? { userId: userId } : {}) },
+  });
 
   const posts = await prisma.post.findMany({
     where: { ...(userId ? { userId: userId } : {}) },
