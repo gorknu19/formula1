@@ -12,7 +12,6 @@ export async function handleDelete(postId: string, posterId: string) {
     method: "DELETE",
     headers: { "Content-Type": "application/json" },
   };
-  //@ts-ignore
   let test = await fetch(`/api/forum?${urlParams}`, options)
     .then(function (response) {
       // The response is a Response instance.
@@ -51,7 +50,7 @@ export async function createPost(postTitle: string, postText: string) {
     body: JSON.stringify(body),
     headers: { "Content-Type": "application/json" },
   };
-  //@ts-ignore
+
   let test = await fetch("/api/forum", options)
     .then(function (response) {
       // The response is a Response instance.
@@ -93,7 +92,7 @@ export async function handleEdit(
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
   };
-  //@ts-ignore
+
   let test = await fetch(`/api/forum?${urlParams}`, options)
     .then(function (response) {
       // The response is a Response instance.

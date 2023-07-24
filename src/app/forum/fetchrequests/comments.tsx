@@ -14,7 +14,7 @@ export async function createComment(req: any) {
     body: JSON.stringify(body),
     headers: { "Content-Type": "application/json" },
   };
-  //@ts-ignore
+
   let test = await fetch("/api/forum/comments", options)
     .then(function (response) {
       // The response is a Response instance.
@@ -53,7 +53,7 @@ export async function handleCommentDelete(
     method: "DELETE",
     headers: { "Content-Type": "application/json" },
   };
-  //@ts-ignore
+
   let test = await fetch(`/api/forum/comments?${urlParams}`, options)
     .then(function (response) {
       // The response is a Response instance.
@@ -96,7 +96,6 @@ export async function handleEdit(
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
   };
-  //@ts-ignore
   let test = await fetch(`/api/forum/comments?${urlParams}`, options)
     .then(function (response) {
       // The response is a Response instance.

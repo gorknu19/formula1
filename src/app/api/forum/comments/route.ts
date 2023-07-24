@@ -31,17 +31,13 @@ export async function POST(req: NextRequest) {
 
   const data = await req.json();
   const secret = process.env.SECRET;
-  //@ts-ignore
   const token = await getToken({ req, secret });
-  console.log(token);
   const userId = token?.id as string;
-  console.log(userId);
 
   const comment = await prisma.comment.create({
     data: {
       content: data.commentBody,
       userId: userId,
-      //@ts-ignore
       postId: data.postId,
     },
   });
@@ -56,7 +52,6 @@ export async function DELETE(req: NextRequest) {
   let commentId = params.get("commentId");
   let commentPosterId = params.get("commentPosterId");
   const secret = process.env.SECRET;
-  //@ts-ignore
   const token = await getToken({ req, secret });
   const userId = token?.id as string;
   const whitelisted = token?.whitelisted;

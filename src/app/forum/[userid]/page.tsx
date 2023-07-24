@@ -5,14 +5,13 @@ import { createPost, handleDelete, handleEdit } from "../fetchrequests/posts";
 import { LoginButton } from "@/components/buttons.component";
 import { useState } from "react";
 import { useSession } from "next-auth/react";
-import { Posts } from "@/types/forum.types";
+import { Posts } from "@/types/forum/forum.types";
 import { BsFillPlusSquareFill } from "react-icons/bs";
 import { ToastContainer } from "react-toastify";
-// how do i type a dynamic route in next.js?
+import { Context } from "@/types/forum/[userid].types";
 
-const ProfilePosts = (context: any) => {
+const ProfilePosts = (context: Context) => {
   const { data: session } = useSession();
-
   const [showCreatePostModal, setShowCreatePostModal] =
     useState<boolean>(false);
   const [showEditModal, setShowEditModal] = useState<boolean>(false);

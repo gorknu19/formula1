@@ -4,7 +4,7 @@ import {
   handleEdit,
 } from "@/app/forum/fetchrequests/comments";
 import { CommentsHook } from "@/hooks/comments.hook";
-import { Comment } from "@/types/forum.types";
+import { Comment } from "@/types/forum/forum.types";
 import { useState } from "react";
 import { useSession } from "next-auth/react";
 
