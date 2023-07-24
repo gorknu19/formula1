@@ -7,7 +7,6 @@ export let PostsHook = (userId: string) => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(5);
   const urlParams = new URLSearchParams();
-  console.log(userId);
   urlParams.append("page", currentPage.toString());
   urlParams.append("pageSize", pageSize.toString());
   if (userId.length > 15) urlParams.append("userId", userId);
@@ -36,7 +35,6 @@ export let PostsHook = (userId: string) => {
     }
     setCurrentPage(currentPage - 1);
   };
-  console.log(data?.posts.length);
   const maxPage = data && data.postsLength / pageSize;
 
   return {

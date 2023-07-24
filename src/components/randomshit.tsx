@@ -4,10 +4,6 @@ export default async function Bingus() {
     setTimeout(resolve, 2000);
   });
 
-  let res = await fetch(`https://jsonplaceholder.typicode.com/todos/10`, {
-    cache: "no-cache",
-  });
-  let data = await res.json();
   return (
     <div>
       <h1>test</h1>

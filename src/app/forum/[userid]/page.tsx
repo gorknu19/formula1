@@ -1,25 +1,25 @@
 "use client";
 import Comments from "@/components/comments";
 import { PostsHook } from "@/hooks/posts.hook";
-import { useSearchParams } from "next/navigation";
 import { createPost, handleDelete, handleEdit } from "../fetchrequests/posts";
 import { LoginButton } from "@/components/buttons.component";
 import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { Posts } from "@/types/forum.types";
-import { NextRequest } from "next/server";
 import { BsFillPlusSquareFill } from "react-icons/bs";
 import { ToastContainer } from "react-toastify";
 // how do i type a dynamic route in next.js?
 
 const ProfilePosts = (context: any) => {
   const { data: session } = useSession();
+
   const [showCreatePostModal, setShowCreatePostModal] =
     useState<boolean>(false);
   const [showEditModal, setShowEditModal] = useState<boolean>(false);
   const [editText, setEditText] = useState<string>("");
   const [editTitle, setEditTitle] = useState<string>("");
   const [editPostId, setEditPostId] = useState<string>("");
+
   const id = context.params?.userid;
   const {
     allPosts,
@@ -31,6 +31,7 @@ const ProfilePosts = (context: any) => {
     maxPage,
     currentPage,
   } = PostsHook(id);
+
   function clickModal() {
     setShowCreatePostModal(!showCreatePostModal);
   }
@@ -56,6 +57,12 @@ const ProfilePosts = (context: any) => {
   return (
     <>
       <div className={`text-center content-center m-5 `}>
+        <button onClick={clickModal}>
+          <BsFillPlusSquareFill
+            className={`w-7 h-7  hover:text-slate-500 transition-colors duration-150`}
+            title="Create new post!"
+          />
+        </button>
         {loading && (
           <>
             <div role="status" className={`text-center block m-auto`}>
@@ -79,10 +86,17 @@ const ProfilePosts = (context: any) => {
             </div>
           </>
         )}
+        {error && (
+          <>
+            <div>
+              <h1>Couldnt fetch posts!</h1>
+            </div>
+          </>
+        )}
         {allPosts && (
           <>
             <div id="postsContainer">
-              {allPosts.map((post: Posts, req: NextRequest) => {
+              {allPosts.map((post: Posts) => {
                 var mySqlDate = post.createdAt.slice(0, 19).replace("T", " ");
                 let createdPost = false;
                 if (
