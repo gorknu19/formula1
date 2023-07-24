@@ -20,27 +20,8 @@ export async function GET(req: NextRequest) {
     orderBy: {
       createdAt: "desc", // Order the posts by creation date (descending)
     },
-    // where: {
-    //   userId: userId,
-    // },
+
     include: {
-      Comment: {
-        select: {
-          content: true,
-          id: true,
-          postId: true,
-          createdAt: true,
-          user: true,
-        },
-        // include: {
-        //   user: {
-        //     select: {
-        //       name: true,
-        //       id: true,
-        //     },
-        //   },
-        // },
-      },
       user: {
         select: {
           name: true,
