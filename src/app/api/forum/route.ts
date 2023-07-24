@@ -1,6 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
-import { PrismaClient } from "@prisma/client";
+import { Comment, Post, Prisma, PrismaClient, User } from "@prisma/client";
+import { Posts } from "@/types/forum/forum.types";
+
+export type ForumGET = {
+  posts: Post & {
+    user: {
+      id: User["id"];
+      name: User["name"];
+    };
+  };
+  postLength: number;
+};
 
 export async function GET(req: NextRequest) {
   const prisma = new PrismaClient();
@@ -12,7 +23,6 @@ export async function GET(req: NextRequest) {
   const postsLength = await prisma.post.count({
     where: { ...(userId ? { userId: userId } : {}) },
   });
-
   const posts = await prisma.post.findMany({
     where: { ...(userId ? { userId: userId } : {}) },
     skip: (page - 1) * pageSize, // Calculate the number of records to skip
@@ -20,27 +30,8 @@ export async function GET(req: NextRequest) {
     orderBy: {
       createdAt: "desc", // Order the posts by creation date (descending)
     },
-    // where: {
-    //   userId: userId,
-    // },
+
     include: {
-      Comment: {
-        select: {
-          content: true,
-          id: true,
-          postId: true,
-          createdAt: true,
-          user: true,
-        },
-        // include: {
-        //   user: {
-        //     select: {
-        //       name: true,
-        //       id: true,
-        //     },
-        //   },
-        // },
-      },
       user: {
         select: {
           name: true,
@@ -50,7 +41,7 @@ export async function GET(req: NextRequest) {
     },
   });
 
-  return NextResponse.json({ posts, postsLength });
+  return NextResponse.json<ForumGET>({ posts, postsLength });
 }
 
 export async function POST(req: NextRequest) {

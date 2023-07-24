@@ -2,8 +2,6 @@ import { NextRequest } from "next/server";
 import { toast } from "react-toastify";
 
 export async function createComment(req: any) {
-  event?.preventDefault();
-
   const body = {
     commentBody: req.target.parentElement.firstChild.value,
     postId: req.target.parentElement.parentElement.id,
@@ -84,7 +82,6 @@ export async function handleEdit(
   commentId: string,
   commentPosterId: string,
 ) {
-  event?.preventDefault();
   const urlParams = new URLSearchParams();
   console.log();
 
