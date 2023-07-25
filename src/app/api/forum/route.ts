@@ -98,7 +98,6 @@ export async function DELETE(req: NextRequest) {
   });
   const post = await prisma.post.deleteMany({
     where: {
-      //@ts-ignore
       id: postId,
     },
   });
@@ -115,7 +114,7 @@ export async function PATCH(req: NextRequest) {
   let postTitle = params.get("postTitle");
   let postText = params.get("postText");
   const secret = process.env.SECRET;
-  //@ts-ignore
+
   const token = await getToken({ req, secret });
   const userId = token?.id as string;
   if (!postTitle || !postText)
@@ -123,11 +122,13 @@ export async function PATCH(req: NextRequest) {
       { error: "Invalid title or body" },
       { status: 400 },
     );
+
+  if (!postId) {
+    return NextResponse.json({ error: "No post specified" }, { status: 400 });
+  }
   const post = await prisma.post.update({
     where: {
-      //@ts-ignore
       id: postId,
-      // userId: userId,
     },
 
     data: {
