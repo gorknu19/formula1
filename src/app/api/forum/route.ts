@@ -4,28 +4,29 @@ import { Comment, Post, Prisma, PrismaClient, User } from "@prisma/client";
 import { Posts } from "@/types/forum/forum.types";
 
 export type ForumGET = {
-  posts: Post & {
+  posts: (Post & {
     user: {
       id: User["id"];
       name: User["name"];
     };
-  };
-  postLength: number;
+  })[];
+  postsLength: number;
+  nextCursor?: number;
 };
 
 export async function GET(req: NextRequest) {
   const prisma = new PrismaClient();
   const url = new URL(req.nextUrl);
   const params = url.searchParams;
-  let pageSize = parseInt(params.get("pageSize") || "10");
-  let page = parseInt(params.get("page") || "1");
+  let pageSize = parseInt(params.get("pageSize") || "2");
+  let skip = parseInt(params.get("skip") || "0");
   let userId = params.get("userId");
   const postsLength = await prisma.post.count({
     where: { ...(userId ? { userId: userId } : {}) },
   });
   const posts = await prisma.post.findMany({
     where: { ...(userId ? { userId: userId } : {}) },
-    skip: (page - 1) * pageSize, // Calculate the number of records to skip
+    skip: skip, // Calculate the number of records to skip
     take: pageSize, // Set the number of records to take per page
     orderBy: {
       createdAt: "desc", // Order the posts by creation date (descending)
@@ -40,8 +41,15 @@ export async function GET(req: NextRequest) {
       },
     },
   });
-
-  return NextResponse.json<ForumGET>({ posts, postsLength });
+  let nextCursor: number | undefined = skip + pageSize;
+  if (nextCursor > postsLength) {
+    nextCursor = undefined;
+  }
+  return NextResponse.json<ForumGET>({
+    posts,
+    postsLength,
+    nextCursor: nextCursor,
+  });
 }
 
 export async function POST(req: NextRequest) {
@@ -74,24 +82,29 @@ export async function DELETE(req: NextRequest) {
   const userId = token?.id as string;
   const whitelisted = token?.whitelisted;
   console.log(postId);
-  const prisma = new PrismaClient();
-  if (posterId === userId || whitelisted === true) {
-    const comments = await prisma.comment.deleteMany({
-      where: {
-        //@ts-ignore
-        postId: postId,
-      },
-    });
-    const post = await prisma.post.deleteMany({
-      where: {
-        //@ts-ignore
-        id: postId,
-      },
-    });
 
-    console.log({ post }, { comments });
-    return NextResponse.json({ post });
-  } else return NextResponse.json({ error: "not authorized" }, { status: 401 });
+  if (posterId !== userId || whitelisted === false) {
+    return NextResponse.json({ error: "not authorized" }, { status: 401 });
+  }
+
+  const prisma = new PrismaClient();
+  if (!postId) {
+    return NextResponse.json({ error: "No post specified" }, { status: 400 });
+  }
+  const comments = await prisma.comment.deleteMany({
+    where: {
+      postId: postId,
+    },
+  });
+  const post = await prisma.post.deleteMany({
+    where: {
+      //@ts-ignore
+      id: postId,
+    },
+  });
+
+  console.log({ post }, { comments });
+  return NextResponse.json({ post });
 }
 
 export async function PATCH(req: NextRequest) {

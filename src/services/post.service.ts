@@ -1,21 +1,25 @@
+import { ForumGET } from "@/app/api/forum/route";
+import { SerializedStateDates } from "@/types/generic";
 import axios from "axios";
 
 interface GetPostsParams {
   userId?: string;
-  currentPage?: number;
+  skip?: number;
   pageSize?: number;
 }
 
-const getPosts = async ({
-  currentPage,
+export const getPosts = async ({
+  skip,
   userId,
   pageSize,
 }: GetPostsParams = {}) => {
-  let posts = axios.get(`/api/forum`, {
+  let res = await axios.get<SerializedStateDates<ForumGET>>(`/api/forum`, {
     params: {
       userId: userId,
-      currentPage: currentPage,
+      skip: skip,
       pageSize: pageSize,
     },
   });
+
+  return res.data;
 };
