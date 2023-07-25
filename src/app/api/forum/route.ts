@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 import { Comment, Post, Prisma, PrismaClient, User } from "@prisma/client";
 import { Posts } from "@/types/forum/forum.types";
+import { forumPostSchema } from "./schema";
 
 export type ForumGET = {
   posts: (Post & {
@@ -51,15 +52,16 @@ export async function GET(req: NextRequest) {
     nextCursor: nextCursor,
   });
 }
-
+export type ForumPOST = {
+  post: Post;
+};
 export async function POST(req: NextRequest) {
   const prisma = new PrismaClient();
-  const data = await req.json();
+  const data = forumPostSchema.parse(await req.json());
   const secret = process.env.SECRET;
   //@ts-ignore
   const token = await getToken({ req, secret });
   const userId = token?.id as string;
-  console.log(userId);
   const post = await prisma.post.create({
     data: {
       title: data.postTitle,
@@ -67,10 +69,10 @@ export async function POST(req: NextRequest) {
       userId: userId,
     },
   });
-  console.log({ post });
 
-  return NextResponse.json({ post });
+  return NextResponse.json<ForumPOST>({ post });
 }
+
 export async function DELETE(req: NextRequest) {
   const url = new URL(req.nextUrl);
   const params = url.searchParams;
