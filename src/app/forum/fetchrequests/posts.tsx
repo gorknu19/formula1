@@ -2,6 +2,7 @@ import { toast } from "react-toastify";
 
 export async function handleDelete(postId: string, posterId: string) {
   console.log(posterId);
+  console.log(postId);
   const urlParams = new URLSearchParams();
   console.log();
 

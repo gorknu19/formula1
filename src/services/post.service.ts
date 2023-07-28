@@ -9,6 +9,22 @@ interface GetPostsParams {
   pageSize?: number;
 }
 
+interface editPostsParams {
+  postData: {
+    postTitle: string;
+    postBody: string;
+    postId: string;
+  };
+}
+interface editCommentParams {
+  postData: {
+    postBody: string;
+    CommentId: string;
+  };
+}
+
+export type Post = SerializedStateDates<ForumGET>["posts"][0];
+
 export const getPosts = async ({
   skip,
   userId,
@@ -37,5 +53,16 @@ export const createPost = async ({
   const res = await axios.post<ForumPOST>("/api/forum", {
     postTitle,
     postBody,
+  });
+};
+
+export const editPost = async ({ postData }: editPostsParams) => {
+  const res = await axios.patch<ForumPOST>("/api/forum", {
+    ...postData,
+  });
+};
+export const editComment = async ({ postData }: editCommentParams) => {
+  const res = await axios.patch<ForumPOST>("/api/forum/comments", {
+    ...postData,
   });
 };

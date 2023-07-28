@@ -1,47 +1,46 @@
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  ForumPostEditSchemaType,
-  ForumPostSchemaType,
-  forumPostEditSchema,
-  forumPostSchema,
+  ForumCommentEditSchemaType,
+  forumCommentEditSchema,
 } from "@/app/api/forum/schema";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { editPost } from "@/services/post.service";
+import { editComment, editPost } from "@/services/post.service";
 
-interface EditPostParams {
-  clickEditModal: () => void;
-  postId: string;
+interface EditCommentParams {
+  clickEditCommentModal: () => void;
+  commentId: string;
 }
 
-const EditPostModal = ({ clickEditModal, postId }: EditPostParams) => {
+const EditCommentModal = ({
+  clickEditCommentModal,
+  commentId,
+}: EditCommentParams) => {
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<ForumPostEditSchemaType>({
-    defaultValues: {
-      postId: postId,
-    },
-    resolver: zodResolver(forumPostEditSchema),
+  } = useForm<ForumCommentEditSchemaType>({
+    resolver: zodResolver(forumCommentEditSchema),
   });
 
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
-    mutationFn: (postData: ForumPostEditSchemaType) => {
-      return editPost({
+    mutationFn: (postData: ForumCommentEditSchemaType) => {
+      return editComment({
         postData: {
           ...postData,
+          CommentId: commentId,
         },
       });
     },
   });
 
-  const onSubmit: SubmitHandler<ForumPostEditSchemaType> = async (data) => {
+  const onSubmit: SubmitHandler<ForumCommentEditSchemaType> = async (data) => {
     await mutation.mutateAsync(data);
     queryClient.invalidateQueries(["posts"]);
-    clickEditModal();
+    clickEditCommentModal();
   };
 
   return (
@@ -53,7 +52,7 @@ const EditPostModal = ({ clickEditModal, postId }: EditPostParams) => {
             className="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-800 dark:hover:text-white"
             data-modal-hide="authentication-modal"
             onClick={() => {
-              clickEditModal();
+              clickEditCommentModal();
             }}
           >
             <svg
@@ -74,23 +73,7 @@ const EditPostModal = ({ clickEditModal, postId }: EditPostParams) => {
           <div className="px-6 py-6 lg:px-8">
             <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
               <div>
-                <h1>Edit post</h1>
-                <label className="block mb-2 text-sm font-medium text-white">
-                  Title
-                </label>
-                <input
-                  type="text"
-                  id="title"
-                  className="bg-slate-600 border border-gray-700 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-                  placeholder="Title"
-                  required
-                  {...register("postTitle")}
-                />
-                {errors.postTitle && (
-                  <span className="text-white block mt-2 bg-red-600 rounded-md p-2 ring-2 ring-red-700 ring-opacity-25  ">
-                    {errors.postTitle.message}
-                  </span>
-                )}
+                <h1>Edit comment!</h1>
               </div>
               <div>
                 <label className="block mb-2 text-sm font-medium text-white">
@@ -105,7 +88,7 @@ const EditPostModal = ({ clickEditModal, postId }: EditPostParams) => {
                 />
                 {errors.postBody && (
                   <span className="text-white block mt-2 bg-red-600 rounded-md p-2 ring-2 ring-red-700 ring-opacity-25  ">
-                    {errors.postBody.message}
+                    {errors.postBody?.message}
                   </span>
                 )}
               </div>
@@ -113,7 +96,7 @@ const EditPostModal = ({ clickEditModal, postId }: EditPostParams) => {
                 type="submit"
                 className="w-full text-white bg-slate-700 hover:bg-slate-900 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
               >
-                Edit post
+                Edit comment
               </button>
             </form>
           </div>
@@ -122,4 +105,5 @@ const EditPostModal = ({ clickEditModal, postId }: EditPostParams) => {
     </div>
   );
 };
-export default EditPostModal;
+
+export default EditCommentModal;

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 import { Comment, Post, Prisma, PrismaClient, User } from "@prisma/client";
 import { Posts } from "@/types/forum/forum.types";
-import { forumPostSchema } from "./schema";
+import { forumPostEditSchema, forumPostSchema } from "./schema";
 
 export type ForumGET = {
   posts: (Post & {
@@ -84,8 +84,9 @@ export async function DELETE(req: NextRequest) {
   const userId = token?.id as string;
   const whitelisted = token?.whitelisted;
   console.log(postId);
+  console.log(postId);
 
-  if (posterId !== userId || whitelisted === false) {
+  if (posterId !== userId && whitelisted === false) {
     return NextResponse.json({ error: "not authorized" }, { status: 401 });
   }
 
@@ -110,32 +111,29 @@ export async function DELETE(req: NextRequest) {
 
 export async function PATCH(req: NextRequest) {
   const prisma = new PrismaClient();
-  const url = new URL(req.nextUrl);
-  const params = url.searchParams;
-  let postId = params.get("postId");
-  let postTitle = params.get("postTitle");
-  let postText = params.get("postText");
+  const data = forumPostEditSchema.parse(await req.json());
+
   const secret = process.env.SECRET;
 
   const token = await getToken({ req, secret });
   const userId = token?.id as string;
-  if (!postTitle || !postText)
+  if (!data.postTitle || !data.postBody)
     return NextResponse.json(
       { error: "Invalid title or body" },
       { status: 400 },
     );
 
-  if (!postId) {
+  if (!data.postId) {
     return NextResponse.json({ error: "No post specified" }, { status: 400 });
   }
   const post = await prisma.post.update({
     where: {
-      id: postId,
+      id: data.postId,
     },
 
     data: {
-      title: postTitle,
-      content: postText,
+      title: data.postTitle,
+      content: data.postBody,
     },
   });
   return NextResponse.json({ post });
