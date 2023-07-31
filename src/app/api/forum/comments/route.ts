@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 import { PrismaClient } from "@prisma/client";
+import { forumCommentEditSchema } from "../schema";
 
 export async function GET(req: NextRequest) {
   const prisma = new PrismaClient();
@@ -73,10 +74,11 @@ export async function DELETE(req: NextRequest) {
 export async function PATCH(req: NextRequest) {
   const prisma = new PrismaClient();
   const url = new URL(req.nextUrl);
-  const params = url.searchParams;
-  let commentId = params.get("postId");
-  let commentText = params.get("postText");
-  let commentPosterId = params.get("commentPosterId");
+
+  const data = forumCommentEditSchema.parse(await req.json());
+  let commentId = data.CommentId;
+  let commentPosterId = data.commentPosterId;
+  let commentText = data.postBody;
   const secret = process.env.SECRET;
   const token = await getToken({ req, secret });
   const userId = token?.id as string;
