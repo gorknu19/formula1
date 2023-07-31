@@ -78,7 +78,6 @@ export async function PATCH(req: NextRequest) {
   let commentText = params.get("postText");
   let commentPosterId = params.get("commentPosterId");
   const secret = process.env.SECRET;
-  //@ts-ignore
   const token = await getToken({ req, secret });
   const userId = token?.id as string;
   const whitelisted = token?.whitelisted;

@@ -20,6 +20,7 @@ interface editCommentParams {
   postData: {
     postBody: string;
     CommentId: string;
+    commentPosterId: string;
   };
 }
 
@@ -62,6 +63,7 @@ export const editPost = async ({ postData }: editPostsParams) => {
   });
 };
 export const editComment = async ({ postData }: editCommentParams) => {
+  console.log("postData");
   const res = await axios.patch<ForumPOST>("/api/forum/comments", {
     ...postData,
   });

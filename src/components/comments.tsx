@@ -138,6 +138,7 @@ export default function Comments({ postId }: CommentsProps) {
                     <EditCommentModal
                       clickEditCommentModal={clickEditCommentModal}
                       commentId={comment.id}
+                      commentPosterId={comment.user.id}
                     />
                   )}
                 </div>

@@ -16,6 +16,11 @@ export const forumPostEditSchema = forumPostSchema.merge(
 export const forumCommentEditSchema = z.object({
   postBody: z.string().min(10),
   CommentId: z.string(),
+  commentPosterId: z
+    .string()
+    .regex(
+      /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/,
+    ),
   // .regex(
   //   /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/,
   // ),

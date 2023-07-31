@@ -4,6 +4,7 @@ import EditPostModal from "./editPostModal";
 import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { Post } from "@/services/post.service";
+import { useQueryClient } from "@tanstack/react-query";
 
 const intlDate = new Intl.DateTimeFormat("en", {
   day: "2-digit",
@@ -19,6 +20,7 @@ interface PostCardParams {
 }
 
 const PostCard = ({ post }: PostCardParams) => {
+  const queryClient = useQueryClient();
   const { data: session } = useSession();
 
   const [showEditModal, setShowEditModal] = useState<boolean>(false);
@@ -62,6 +64,7 @@ const PostCard = ({ post }: PostCardParams) => {
             className="px-2 py-1 bg-red-500 text-white rounded-md"
             onClick={async () => {
               await handleDelete(post.id, post.user.id);
+              queryClient.invalidateQueries(["posts"]);
             }}
           >
             Delete
