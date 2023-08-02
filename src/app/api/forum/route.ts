@@ -55,6 +55,9 @@ export async function GET(req: NextRequest) {
 export type ForumPOST = {
   post: Post;
 };
+export type ForumComment = {
+  comment: Comment;
+};
 export async function POST(req: NextRequest) {
   const prisma = new PrismaClient();
   const data = forumPostSchema.parse(await req.json());

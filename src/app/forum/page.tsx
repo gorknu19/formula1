@@ -5,7 +5,6 @@ import { LoginButton, LogoutButton } from "@/components/buttons.component";
 import { ToastContainer, toast } from "react-toastify";
 import { BsFillPlusSquareFill } from "react-icons/bs";
 import { createPost, handleDelete, handleEdit } from "./fetchrequests/posts";
-import { createComment } from "./fetchrequests/comments";
 import { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 import { Posts, Comment } from "@/types/forum/forum.types";

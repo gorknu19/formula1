@@ -1,6 +1,9 @@
 import { commentGET } from "@/app/api/forum/comments/route";
-import { ForumGET, ForumPOST } from "@/app/api/forum/route";
-import { ForumPostSchemaType } from "@/app/api/forum/schema";
+import { ForumComment, ForumGET, ForumPOST } from "@/app/api/forum/route";
+import {
+  ForumCommentSchemaType,
+  ForumPostSchemaType,
+} from "@/app/api/forum/schema";
 import { SerializedStateDates } from "@/types/generic";
 import axios from "axios";
 
@@ -47,6 +50,7 @@ export const getPosts = async ({
 };
 
 type CreatePostsParams = ForumPostSchemaType;
+type CreateCommentParams = ForumCommentSchemaType;
 
 // postTitle: string;
 // postBody: number;
@@ -66,6 +70,17 @@ export const editPost = async ({ postData }: editPostsParams) => {
     ...postData,
   });
 };
+
+export const createComment = async ({
+  postBody,
+  postId,
+}: CreateCommentParams) => {
+  const res = await axios.post<ForumComment>("/api/forum/comments", {
+    postBody,
+    postId,
+  });
+};
+
 export const editComment = async ({ postData }: editCommentParams) => {
   console.log("postData");
   const res = await axios.patch<ForumPOST>("/api/forum/comments", {
@@ -75,14 +90,11 @@ export const editComment = async ({ postData }: editCommentParams) => {
 
 export const getComments = async ({ postId }: GetCommentsParams) => {
   console.log(postId);
-  let res = await axios.get<SerializedStateDates<commentGET>>(
-    `/api/forum/comments`,
-    {
-      params: {
-        postId: postId,
-      },
+  let res = await axios.get<commentGET>(`/api/forum/comments`, {
+    params: {
+      postId: postId,
     },
-  );
+  });
 
   return res.data;
 };

@@ -1,5 +1,4 @@
 import {
-  createComment,
   handleCommentDelete,
   handleEdit,
 } from "@/app/forum/fetchrequests/comments";
@@ -9,7 +8,14 @@ import React, { useState } from "react";
 import { useSession } from "next-auth/react";
 import EditCommentModal from "./editCommentModal.component";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { getComments } from "@/services/post.service";
+import { createComment, getComments } from "@/services/post.service";
+import { useMutation } from "@tanstack/react-query";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  ForumCommentSchemaType,
+  forumCommentSchema,
+} from "@/app/api/forum/schema";
 
 interface CommentsProps {
   postId: string;
@@ -35,6 +41,27 @@ export default function Comments({ postId }: CommentsProps) {
     setShowCommentEditModal(!showCommentEditModal);
   }
 
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<ForumCommentSchemaType>({
+    resolver: zodResolver(forumCommentSchema),
+    defaultValues: {
+      postId: postId,
+    },
+  });
+  const mutation = useMutation({
+    mutationFn: (postData: ForumCommentSchemaType) => {
+      return createComment(postData);
+    },
+  });
+
+  const onSubmit: SubmitHandler<ForumCommentSchemaType> = async (data) => {
+    await mutation.mutateAsync(data);
+    queryClient.invalidateQueries([postId]);
+  };
+
   if (isFetching)
     return (
       <>
@@ -59,24 +86,29 @@ export default function Comments({ postId }: CommentsProps) {
         </div>
       </>
     );
-  if (data === undefined || !data[0])
+  if (data === undefined || !Array.isArray(data))
     return (
       <>
         <div className="mt-4">
-          <input
-            type="text"
-            className="w-4/5 border border-gray-300 rounded-full m-2 p-2 text-black"
-            placeholder="Add a comment"
-          />
-          <button
-            className="rounded-full bg-gray-700 p-2 inline-flex items-center justify-center"
-            onClick={async (req) => {
-              await createComment(req);
-              queryClient.invalidateQueries(["posts"]);
-            }}
-          >
-            add comment
-          </button>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <input
+              type="text"
+              className="w-4/5 border border-gray-300 rounded-full m-2 p-2 text-black"
+              placeholder="Add a comment"
+              {...register("postBody")}
+            />
+            {errors.postBody && (
+              <span className="text-white block mt-2 bg-red-600 rounded-md p-2 ring-2 ring-red-700 ring-opacity-25">
+                {errors.postBody?.message}
+              </span>
+            )}
+            <button
+              className="rounded-full bg-gray-700 p-2 inline-flex items-center justify-center"
+              type="submit"
+            >
+              add comment
+            </button>
+          </form>
         </div>
         <h3 className="text-lg font-bold mb-2 pt-3">
           No comments on this post yet!
@@ -87,20 +119,25 @@ export default function Comments({ postId }: CommentsProps) {
   return (
     <>
       <div className="mt-4">
-        <input
-          type="text"
-          className="w-4/5 border border-gray-300 rounded-full m-2 p-2 text-black"
-          placeholder="Add a comment"
-        />
-        <button
-          className="rounded-full bg-gray-700 p-2 inline-flex items-center justify-center"
-          onClick={async (req) => {
-            await createComment(req);
-            queryClient.invalidateQueries([postId]);
-          }}
-        >
-          add comment
-        </button>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <input
+            type="text"
+            className="w-4/5 border border-gray-300 rounded-full m-2 p-2 text-black"
+            placeholder="Add a comment"
+            {...register("postBody")}
+          />
+          {errors.postBody && (
+            <span className="text-white block mt-2 bg-red-600 rounded-md p-2 ring-2 ring-red-700 ring-opacity-25">
+              {errors.postBody?.message}
+            </span>
+          )}
+          <button
+            className="rounded-full bg-gray-700 p-2 inline-flex items-center justify-center"
+            type="submit"
+          >
+            add comment
+          </button>
+        </form>
       </div>
       {data && (
         <div className="mt-5">
@@ -129,59 +166,61 @@ export default function Comments({ postId }: CommentsProps) {
             </>
           )}
           <div className="bg-slate-900 p-4 rounded">
-            {data.map((comment: Comment) => {
-              var mySqlDate = comment.createdAt.slice(0, 19).replace("T", " ");
-              let createdComment = false;
-              if (
-                //@ts-ignore
-                comment.user.id === session.user?.id ||
-                //@ts-ignore
-                session.user?.whitelisted === true
-              )
-                createdComment = true;
-              return (
-                <div key={comment.id} className="border-t pt-4 mt-4">
-                  <p className="text-gray-600">{comment.content}</p>
-                  <div className="flex justify-between items-center text-gray-500 mt-2">
-                    <p className="text-sm">{mySqlDate}</p>
-                    <p className="text-sm">{comment.user.name}</p>
-                  </div>
-                  {createdComment && (
-                    <div className="mt-2">
-                      <button
-                        className="px-2 py-1 bg-blue-500 text-white rounded-md mr-2"
-                        onClick={async () => {
-                          clickEditCommentModal();
-                          queryClient.invalidateQueries([postId]);
-                        }}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className="px-2 py-1 bg-red-500 text-white rounded-md"
-                        onClick={async () => {
-                          await handleCommentDelete(
-                            comment.id,
-                            comment.user.id,
-                          );
-                          queryClient.invalidateQueries([postId]);
-                        }}
-                      >
-                        Delete
-                      </button>
+            {Array.isArray(data) &&
+              data.map((comment: Comment) => {
+                var mySqlDate = comment.createdAt
+                  .slice(0, 19)
+                  .replace("T", " ");
+                let createdComment = false;
+                if (
+                  //@ts-ignore
+                  comment.user.id === session.user?.id ||
+                  //@ts-ignore
+                  session.user?.whitelisted === true
+                )
+                  createdComment = true;
+                return (
+                  <div key={comment.id} className="border-t pt-4 mt-4">
+                    <p className="text-gray-600">{comment.content}</p>
+                    <div className="flex justify-between items-center text-gray-500 mt-2">
+                      <p className="text-sm">{mySqlDate}</p>
+                      <p className="text-sm">{comment.user.name}</p>
                     </div>
-                  )}
-                  {showCommentEditModal && (
-                    <EditCommentModal
-                      clickEditCommentModal={clickEditCommentModal}
-                      commentId={comment.id}
-                      commentPosterId={comment.user.id}
-                      postId={postId}
-                    />
-                  )}
-                </div>
-              );
-            })}
+                    {createdComment && (
+                      <div className="mt-2">
+                        <button
+                          className="px-2 py-1 bg-blue-500 text-white rounded-md mr-2"
+                          onClick={async () => {
+                            clickEditCommentModal();
+                          }}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          className="px-2 py-1 bg-red-500 text-white rounded-md"
+                          onClick={async () => {
+                            await handleCommentDelete(
+                              comment.id,
+                              comment.user.id,
+                            );
+                            queryClient.invalidateQueries([postId]);
+                          }}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    )}
+                    {showCommentEditModal && (
+                      <EditCommentModal
+                        clickEditCommentModal={clickEditCommentModal}
+                        commentId={comment.id}
+                        commentPosterId={comment.user.id}
+                        postId={postId}
+                      />
+                    )}
+                  </div>
+                );
+              })}
           </div>
         </div>
       )}

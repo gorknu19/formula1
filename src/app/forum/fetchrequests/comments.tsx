@@ -1,41 +1,47 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { NextRequest } from "next/server";
 import { toast } from "react-toastify";
 
-export async function createComment(req: any) {
-  const body = {
-    commentBody: req.target.parentElement.firstChild.value,
-    postId: req.target.parentElement.parentElement.id,
-  };
+// export async function CreateComment(req: any) {
+//   const queryClient = useQueryClient();
 
-  const options = {
-    method: "POST",
-    body: JSON.stringify(body),
-    headers: { "Content-Type": "application/json" },
-  };
+//   const body = {
+//     commentBody: req.target.parentElement.firstChild.value,
+//     postId: req.target.parentElement.parentElement.id,
+//   };
 
-  let test = await fetch("/api/forum/comments", options)
-    .then(function (response) {
-      // The response is a Response instance.
-      // You parse the data into a useable format using `.json()`
-      // return response.json();
-    })
-    .then(function (data) {
-      toast.success("🦄 Comment created!", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "dark",
-      });
+//   const options = {
+//     method: "POST",
+//     body: JSON.stringify(body),
+//     headers: { "Content-Type": "application/json" },
+//   };
 
-      // `data` is the parsed version of the JSON returned from the above endpoint.
-      console.log(data);
-    });
-  console.log(test);
-}
+//   let test = await fetch("/api/forum/comments", options)
+//     .then(function (response) {
+//       // The response is a Response instance.
+//       // You parse the data into a useable format using `.json()`
+//       // return response.json();
+//     })
+//     .then(function (data) {
+//       toast.success("🦄 Comment created!", {
+//         position: "top-right",
+//         autoClose: 5000,
+//         hideProgressBar: false,
+//         closeOnClick: true,
+//         pauseOnHover: true,
+//         draggable: true,
+//         progress: undefined,
+//         theme: "dark",
+//       });
+//       queryClient.invalidateQueries([
+//         req.target.parentElement.parentElement.id,
+//       ]);
+
+//       // `data` is the parsed version of the JSON returned from the above endpoint.
+//       console.log(data);
+//     });
+//   console.log(test);
+// }
 
 export async function handleCommentDelete(
   commentId: string,

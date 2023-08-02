@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 import { PrismaClient, User } from "@prisma/client";
-import { forumCommentEditSchema } from "../schema";
+import { forumCommentEditSchema, forumCommentSchema } from "../schema";
 
 export type commentGET = {
   comment: (Comment & {
@@ -38,15 +38,15 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   const prisma = new PrismaClient();
+  const data = forumCommentSchema.parse(await req.json());
 
-  const data = await req.json();
   const secret = process.env.SECRET;
   const token = await getToken({ req, secret });
   const userId = token?.id as string;
 
   const comment = await prisma.comment.create({
     data: {
-      content: data.commentBody,
+      content: data.postBody,
       userId: userId,
       postId: data.postId,
     },
