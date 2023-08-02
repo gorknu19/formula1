@@ -1,7 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, User } from "@prisma/client";
 import { forumCommentEditSchema } from "../schema";
+
+export type commentGET = {
+  comment: (Comment & {
+    user: {
+      id: User["id"];
+      name: User["name"];
+    };
+  })[];
+};
 
 export async function GET(req: NextRequest) {
   const prisma = new PrismaClient();

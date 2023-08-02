@@ -1,3 +1,4 @@
+import { commentGET } from "@/app/api/forum/comments/route";
 import { ForumGET, ForumPOST } from "@/app/api/forum/route";
 import { ForumPostSchemaType } from "@/app/api/forum/schema";
 import { SerializedStateDates } from "@/types/generic";
@@ -7,6 +8,9 @@ interface GetPostsParams {
   userId?: string;
   skip?: number;
   pageSize?: number;
+}
+interface GetCommentsParams {
+  postId: string;
 }
 
 interface editPostsParams {
@@ -67,4 +71,18 @@ export const editComment = async ({ postData }: editCommentParams) => {
   const res = await axios.patch<ForumPOST>("/api/forum/comments", {
     ...postData,
   });
+};
+
+export const getComments = async ({ postId }: GetCommentsParams) => {
+  console.log(postId);
+  let res = await axios.get<SerializedStateDates<commentGET>>(
+    `/api/forum/comments`,
+    {
+      params: {
+        postId: postId,
+      },
+    },
+  );
+
+  return res.data;
 };

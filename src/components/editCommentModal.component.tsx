@@ -11,12 +11,14 @@ interface EditCommentParams {
   clickEditCommentModal: () => void;
   commentId: string;
   commentPosterId: string;
+  postId: string;
 }
 
 const EditCommentModal = ({
   clickEditCommentModal,
   commentId,
   commentPosterId,
+  postId,
 }: EditCommentParams) => {
   const {
     register,
@@ -46,7 +48,7 @@ const EditCommentModal = ({
   const onSubmit: SubmitHandler<ForumCommentEditSchemaType> = async (data) => {
     console.log("mongo");
     await mutation.mutateAsync(data);
-    queryClient.invalidateQueries(["posts"]);
+    queryClient.invalidateQueries([postId]);
     clickEditCommentModal();
   };
   console.log(errors);
