@@ -188,7 +188,7 @@ export default function Comments({ postId }: CommentsProps) {
                       }}
                     >
                       <div>
-                        <h1>Edit post</h1>
+                        <h1>Edit Comment</h1>
                       </div>
                       <div>
                         <label className="block mb-2 text-sm font-medium text-white">
