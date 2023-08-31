@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
   const prisma = new PrismaClient();
   const data = forumPostSchema.parse(await req.json());
   const secret = process.env.SECRET;
-  //@ts-ignore
+
   const token = await getToken({ req, secret });
   const userId = token?.id as string;
   const post = await prisma.post.create({
@@ -82,7 +82,7 @@ export async function DELETE(req: NextRequest) {
   let postId = params.get("postId");
   let posterId = params.get("posterId");
   const secret = process.env.SECRET;
-  //@ts-ignore
+
   const token = await getToken({ req, secret });
   const userId = token?.id as string;
   const whitelisted = token?.whitelisted;

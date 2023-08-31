@@ -67,10 +67,11 @@ export async function DELETE(req: NextRequest) {
   const whitelisted = token?.whitelisted;
   console.log(commentId);
   const prisma = new PrismaClient();
+  if (!commentId)
+    return NextResponse.json({ error: "no commentId" }, { status: 400 });
   if (commentPosterId === userId || whitelisted === true) {
     const comment = await prisma.comment.deleteMany({
       where: {
-        //@ts-ignore
         id: commentId,
       },
     });

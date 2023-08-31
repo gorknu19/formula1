@@ -30,12 +30,7 @@ const PostCard = ({ post }: PostCardParams) => {
 
   var mySqlDate = intlDate.format(new Date(post.createdAt));
   let createdPost = false;
-  if (
-    //@ts-ignore
-    post.user.id === session.user?.id ||
-    //@ts-ignore
-    session.user?.whitelisted === true
-  )
+  if (post.user.id === session?.user?.id || session?.user?.whitelisted === true)
     createdPost = true;
   return (
     <div

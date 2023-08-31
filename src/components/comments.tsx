@@ -173,10 +173,8 @@ export default function Comments({ postId }: CommentsProps) {
                   .replace("T", " ");
                 let createdComment = false;
                 if (
-                  //@ts-ignore
-                  comment.user.id === session.user?.id ||
-                  //@ts-ignore
-                  session.user?.whitelisted === true
+                  comment.user.id === session?.user?.id ||
+                  session?.user?.whitelisted === true
                 )
                   createdComment = true;
                 return (

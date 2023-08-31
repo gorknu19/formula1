@@ -31,10 +31,10 @@ export const RegisterForm = () => {
       }
 
       signIn(undefined, { callbackUrl: "/" });
-    } catch (error: any) {
+    } catch (error) {
       setLoading(false);
       console.error(error);
-      alert(error.message);
+      if (error instanceof Error) alert(error.message);
     }
   };
 
